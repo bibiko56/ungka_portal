@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import Features from './components/Features';
 import Population from './components/Population';
 import LatestInformation from './components/LatestInformation';
+import UpcomingEvents from './components/UpcomingEvents';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Features />
         <Population />
         <LatestInformation />
+        <UpcomingEvents />
         {/* Next sections like Quick Links or News can go here */}
       </main>
       <Footer />
