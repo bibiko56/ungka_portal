@@ -5,6 +5,8 @@ import Features from './components/Features';
 import Population from './components/Population';
 import LatestInformation from './components/LatestInformation';
 import UpcomingEvents from './components/UpcomingEvents';
+import UpcomingEvents2 from './components/UpcomingEvents2';
+import JoinCommunityBanner from './components/JoinCommunityBanner';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -17,6 +19,8 @@ export default function App() {
         <Population />
         <LatestInformation />
         <UpcomingEvents />
+        <UpcomingEvents2 />
+        <JoinCommunityBanner />
         {/* Next sections like Quick Links or News can go here */}
       </main>
       <Footer />
