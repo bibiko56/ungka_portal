@@ -50,6 +50,9 @@ export default function HealthCenterServices() {
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8 max-w-7xl mx-auto space-y-6">
+      <div className="inline-block bg-[#1e3e2b] text-white font-extrabold text-xl sm:text-2xl px-6 py-2.5 rounded-r-full shadow-md">
+          Health Center Services
+        </div>
       
       {/* SERVICES OFFERED HEADING */}
       <h3 className="text-2xl sm:text-3xl font-black text-[#1e3e2b]">

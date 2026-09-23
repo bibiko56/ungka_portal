@@ -1,4 +1,5 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -16,30 +17,47 @@ import BarangayHallServices from './components/BarangayHallServices';
 import StartUServeCTA from './components/StartUServeCTA';
 import Footer from './components/Footer';
 
+import Volunteer from './pages/Volunteer';
+import NewsUpdate from './pages/NewsUpdate';
+import Services from './pages/Services';
+import About from './pages/About';
+import Contact from './pages/Contact';
+
+function Home() {
+  return (
+    <>
+      <Hero />
+      <Features />
+      <Population />
+      <LatestInformation />
+      <UpcomingEvents />
+      <UpcomingEvents2 />
+      <JoinCommunityBanner />
+      <RecentAccomplishments />
+      <RecentSKEvent />
+      <SKUpcomingEvents />
+      <SKRecentAccomplishments />
+      <HealthCenterServices />
+      <BarangayHallServices />
+      <StartUServeCTA />
+    </>
+  );
+}
+
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <main className="flex-grow">
-        <Hero />
-        <Features />
-        <Population />
-        <LatestInformation />
-        <UpcomingEvents />
-        <UpcomingEvents2 />
-        <JoinCommunityBanner />
-        <RecentAccomplishments />
-        <RecentSKEvent />
-        <SKUpcomingEvents />
-        <SKRecentAccomplishments />
-        <div className="min-h-screen bg-white">
-        <HealthCenterServices />
-        </div>
-        <div className="min-h-screen bg-white">
-        <BarangayHallServices />
-        </div>
-        <StartUServeCTA />
-        {/* Next sections like Quick Links or News can go here */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/health-center" element={<HealthCenterServices />} />
+          <Route path="/news" element={<NewsUpdate />} />
+          <Route path="/volunteer" element={<Volunteer />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </main>
       <Footer />
     </div>
