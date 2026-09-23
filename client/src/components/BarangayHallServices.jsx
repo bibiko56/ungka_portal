@@ -5,31 +5,43 @@ const barangayServicesData = [
     id: 1,
     title: 'Complaints',
     description: 'Filing official reports, blotters, or disputes for local dispute resolution (Katarungang Pambarangay).',
-    image: '/path-to-complaints.jpg',
+    image: '/path-to-complaints.png',
   },
   {
     id: 2,
     title: 'Summon',
     description: 'Issuing formal notices or summonses for involved parties to attend barangay conciliation sessions.',
-    image: '/path-to-summon.jpg',
+    image: '/path-to-summon.png',
   },
   {
     id: 3,
     title: 'Inquiries',
     description: 'Processing general questions regarding local barangay records, requirements, fees, and government programs.',
-    image: '/path-to-inquiries.jpg',
+    image: '/path-to-inquiries.png',
   },
   {
     id: 4,
     title: 'Certification',
     description: 'Issuing official barangay certificates, clearances, and endorsements for employment, business, or government requirements.',
-    image: '/path-to-certification.jpg',
+    image: '/path-to-certification.png',
   },
   {
     id: 5,
     title: 'Barangay Clearance',
     description: 'Processing official clearance permits for residency verification, business operations, and legal applications.',
-    image: '/path-to-clearance.jpg',
+    image: '/path-to-clearance.png',
+  },
+  {
+    id: 6,
+    title: 'Cedula',
+    description: 'Securing a Community Tax Certificate (CTC), an essential government-issued identification document...',
+    image: '/path-to-cedula.png',
+  },
+  {
+    id: 7,
+    title: 'Official Receipts',
+    description: 'Issuing proof of payment for local fees, permits, taxes, or other financial transactions processed by the office.',
+    image: '/path-to-official-receipts.png',
   },
 ];
 

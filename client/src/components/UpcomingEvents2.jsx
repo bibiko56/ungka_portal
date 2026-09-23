@@ -132,7 +132,7 @@ export default function UpcomingEvents2() {
 
               {/* Pop-out / Floating Image */}
               {event.image && (
-                <div className="absolute right-0 bottom-16 w-44 h-48 pointer-events-none flex items-end justify-end z-10">
+                <div className="absolute right-0 bottom-16 w-35 h-48 pointer-events-none flex items-end justify-end z-10">
                   <img
                     src={event.image}
                     alt={event.title}

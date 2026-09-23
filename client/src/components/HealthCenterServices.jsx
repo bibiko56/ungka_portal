@@ -5,31 +5,31 @@ const servicesData = [
     id: 1,
     title: 'Medical Consultation',
     description: 'Provides basic check-ups, consultations, and health advice for residents.',
-    image: '/path-to-medical-consultation.jpg',
+    image: '/path-to-medical-consultation.png',
   },
   {
     id: 2,
     title: 'Immunization',
     description: 'Offers routine vaccinations to help protect children and residents from diseases.',
-    image: '/path-to-immunization.jpg',
+    image: '/path-to-immunization.png',
   },
   {
     id: 3,
     title: 'Dengue Prevention',
     description: 'Provides information and guidance on preventing dengue and controlling mosquito breeding.',
-    image: '/path-to-dengue-prevention.jpg',
+    image: '/path-to-dengue-prevention.png',
   },
   {
     id: 4,
     title: 'Medicine Assistance',
     description: 'Helps residents access available medicines for common health conditions.',
-    image: '/path-to-medicine-assistance.jpg',
+    image: '/path-to-medicine-assistance.png',
   },
   {
     id: 5,
     title: 'Maternal & Child Care',
     description: 'Comprehensive check-ups and nutritional monitoring for expecting mothers and infants.',
-    image: '/path-to-maternal-care.jpg',
+    image: '/path-to-maternal-care.png',
   },
 ];
 
