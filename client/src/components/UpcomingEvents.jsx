@@ -5,13 +5,13 @@ const upcomingEvents = [
     id: 1,
     title: 'Tree Planting Activity',
     date: 'November 8, 2026',
-    image: '/path-to-plant-hand.png', // Replace with your PNG image
+    image: '/path-to-plant-hand.png', 
   },
   {
     id: 2,
     title: 'Clean up Drive Activity',
     date: 'November 8, 2026',
-    image: '/path-to-trash-hand.png', // Replace with your PNG image
+    image: '/path-to-trash-hand.png',
   },
   {
     id: 3,

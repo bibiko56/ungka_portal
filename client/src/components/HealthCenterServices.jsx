@@ -31,6 +31,42 @@ const servicesData = [
     description: 'Comprehensive check-ups and nutritional monitoring for expecting mothers and infants.',
     image: '/path-to-maternal-care.png',
   },
+  {
+    id: 6,
+    title: 'Child Health',
+    description: 'Growth monitoring, nutrition assessment, and health check-ups for children.',
+    image: '/path-to-child-care.png',
+  },
+  {
+    id: 7,
+    title: 'Health Screening',
+    description: 'Basic monitoring such as blood pressure, temperature, and other available screenings.',
+    image: '/path-to-health-screening.png',
+  },
+  {
+    id: 8,
+    title: 'Nutrition Services',
+    description: 'Nutrition counseling and monitoring for children, mothers, and other residents.',
+    image: '/path-to-nutrition.png',
+  },
+  {
+    id: 9,
+    title: 'First Aid',
+    description: 'Assistance for minor injuries and common health concerns.',
+    image: '/path-to-first-aid.png',
+  },
+  {
+    id: 10,
+    title: 'Health Records',
+    description: 'Assistance with available health-related records and certifications.',
+    image: '/path-to-health-record.png',
+  },
+  {
+    id: 11,
+    title: 'Health Educationh',
+    description: 'Information campaigns about sanitation, hygiene, disease prevention, and healthy living.',
+    image: '/path-to-health-education.png',
+  }
 ];
 
 export default function HealthCenterServices() {

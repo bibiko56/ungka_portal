@@ -1,17 +1,14 @@
 import React from 'react';
+import AboutHero from '../components/AboutHero';
 import Features from '../components/Features';
 import Population from '../components/Population';
+import AboutUsSection from '../components/AboutUsSection';
 
 export default function About() {
   return (
     <div className="bg-white">
       {/* Page Header */}
-      <div className="bg-emerald-900 text-white py-16 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight">About Barangay Ungka</h1>
-        <p className="mt-4 text-lg text-emerald-100 max-w-2xl mx-auto">
-          Learn about our history, community demographics, leadership, and our vision for a progressive local administration.
-        </p>
-      </div>
+      <AboutHero />
 
       {/* Main Content Sections */}
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">
@@ -32,6 +29,7 @@ export default function About() {
         </div>
 
         {/* Existing Components */}
+        <AboutUsSection />
         <Population />
       </div>
     </div>

@@ -1,17 +1,15 @@
 import React from 'react';
-import SKUpcomingEvents from '../components/SKUpcomingEvents';
-import SKRecentAccomplishments from '../components/SKRecentAccomplishments';
+import JoinEventsHero from '../components/JoinEventsHero';
+import EventRegistrationSection from '../components/EventRegistrationSection';
+import RecentAccomplishmentsGrid from '../components/RecentAccomplishmentsGrid';
 
 export default function Volunteer() {
   return (
     <div className="bg-white min-h-screen">
       {/* Page Header */}
-      <div className="bg-emerald-900 text-white py-16 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight">Community & Youth Volunteering</h1>
-        <p className="mt-4 text-lg text-emerald-100 max-w-2xl mx-auto">
-          Get involved in local initiatives, youth activities (SK), and community outreach programs in Barangay Ungka.
-        </p>
-      </div>
+      <JoinEventsHero />
+      <EventRegistrationSection />
+      <RecentAccomplishmentsGrid />
 
       {/* Volunteer Registration & Info */}
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">

@@ -73,7 +73,7 @@ export default function BarangayHallServices() {
         {/* Hero Banner with Dark Gradient Overlay */}
         <div className="relative rounded-2xl overflow-hidden shadow-xl h-80 sm:h-96 bg-gray-900">
           <img
-            src="/path-to-barangay-officials.jpg"
+            src="/path-to-barangay-officials.png"
             alt="Barangay Ungka II Hall Officials"
             className="w-full h-full object-cover opacity-60"
           />

@@ -1,16 +1,12 @@
 import React from 'react';
+import ContactUsHero from '../components/ContactUsHero';
 import StartUServeCTA from '../components/StartUServeCTA';
 
 export default function Contact() {
   return (
     <div className="bg-white">
       {/* Page Header */}
-      <div className="bg-emerald-900 text-white py-16 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight">Contact Us</h1>
-        <p className="mt-4 text-lg text-emerald-100 max-w-2xl mx-auto">
-          Have questions or need assistance? Reach out to the Barangay Ungka Administration.
-        </p>
-      </div>
+      <ContactUsHero />
 
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Contact Form & Info Grid */}

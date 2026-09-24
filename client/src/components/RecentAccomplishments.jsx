@@ -5,13 +5,13 @@ const heroAccomplishments = [
     id: 1,
     title: 'Barangay Ungka II Leads Tree Planting and Clean-Up Drive',
     description: 'Pavia, Iloilo – In a strong show of community spirit, Barangay Ungka II recently led a comprehensive Tree Planting and Clean-Up Drive.',
-    image: '/path-to-tree-planting.jpg',
+    image: '/path-to-tree-planting-image2.png',
   },
   {
     id: 2,
     title: 'Barangay Ungka II Clean-Up Drive 2025',
     description: 'Volunteers work together to collect waste, clear public areas, and maintain a healthy and safe environment.',
-    image: '/path-to-cleanup-drive.jpg',
+    image: '/path-to-cleanup-drive-image.png',
   },
 ];
 
@@ -21,28 +21,28 @@ const secondaryAccomplishments = [
     title: 'Ungka II Blood donation Drive for Drug Prevention',
     description: 'This activity encourages residents to donate blood to help save lives while raising awareness about the importance of staying away from illegal drugs.',
     date: 'November 21, 2025',
-    image: '/path-to-blood-donation.jpg',
+    image: '/path-to-blood-donation-image.png',
   },
   {
     id: 2,
-    title: 'Ungka II Blood donation Drive for Drug Prevention',
+    title: 'Tree-Planting and Clean-up Drive',
     description: 'Volunteers work together to collect waste, clear public areas, and maintain a healthy and safe environment.',
     date: 'November 24, 2025',
-    image: '/path-to-[#1e3e2b]-event.jpg',
+    image: '/path-to-cleanup-drive-image.png',
   },
   {
     id: 3,
     title: 'SK Ungka II Conducts "Bahay Kalinga" Outreach Program',
     description: 'This activity encourages residents to donate blood to help save lives while raising awareness about the importance of staying away from illegal drugs.',
     date: 'December 10, 2025',
-    image: '/path-to-bahay-kalinga.jpg',
+    image: '/path-to-bahay-kalinga-image.png',
   },
   {
     id: 4,
-    title: 'SK Ungka II Conducts "Bahay Kalinga" Outreach Program',
+    title: 'Basketball Summer Hinampang',
     description: 'The league provides a positive and competitive environment where participants can showcase their talents while strengthening camaraderie and community spirit.',
     date: 'December 15, 2025',
-    image: '/path-to-sports-event.jpg',
+    image: '/path-to-basketball-league-image.png',
   },
 ];
 
