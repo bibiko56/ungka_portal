@@ -23,6 +23,12 @@ import Services from './pages/Services';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+import Login from './pages/Login';
+import AdminLogin from './pages/AdminLogin';
+import UserLogin from './pages/UserLogin';
+import UserRegister from './pages/UserRegister';
+import AdminRegister from './pages/AdminRegister';
+
 function Home() {
   return (
     <>
@@ -57,6 +63,11 @@ export default function App() {
           <Route path="/news" element={<NewsUpdate />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/login/admin" element={<AdminLogin />} />
+          <Route path="/login/user" element={<UserLogin />} />
+          <Route path="/register/user" element={<UserRegister />} />
+          <Route path="/register/admin" element={<AdminRegister />} />
         </Routes>
       </main>
       <Footer />

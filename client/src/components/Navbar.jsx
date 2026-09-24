@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Helper for conditional styling on active routes
   const linkClass = ({ isActive }) =>
@@ -40,7 +41,6 @@ export default function Navbar() {
           <NavLink to="/news" className={linkClass}>
             News & Updates
           </NavLink>
-          {/* FIX: Changed /volunteek -> /volunteer */}
           <NavLink to="/volunteer" className={linkClass}>
             Volunteer
           </NavLink>
@@ -51,8 +51,11 @@ export default function Navbar() {
 
         {/* Action Button & Mobile Toggle */}
         <div className="flex items-center space-x-3">
-          <button className="bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition">
-            Portal Login
+          <button 
+            onClick={() => navigate('/login')}
+            className="bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition cursor-pointer"
+          >
+            Login
           </button>
 
           <button
@@ -130,6 +133,17 @@ export default function Navbar() {
           >
             Contact
           </NavLink>
+          <div className="pt-2 border-t border-gray-100">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/login');
+              }}
+              className="w-full text-center bg-emerald-800 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition"
+            >
+              Login
+            </button>
+          </div>
         </nav>
       )}
     </header>
