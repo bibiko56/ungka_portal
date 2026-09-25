@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 1. Import useAuth
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuth(); // 2. Access user state and logout handler
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigate('/login');
+  };
 
   // Helper for conditional styling on active routes
   const linkClass = ({ isActive }) =>
@@ -23,7 +31,7 @@ export default function Navbar() {
             U
           </div>
           <span className="font-bold text-lg text-emerald-950">
-            BARANGAY UNGKA
+            UServe
           </span>
         </Link>
 
@@ -51,12 +59,28 @@ export default function Navbar() {
 
         {/* Action Button & Mobile Toggle */}
         <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => navigate('/login')}
-            className="bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition cursor-pointer"
-          >
-            Login
-          </button>
+          {user ? (
+            /* Desktop Logged-in State */
+            <div className="hidden md:flex items-center space-x-3">
+              <span className="text-xs font-semibold text-emerald-950">
+                Hi, {user.fullName || user.firstName || 'User'}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            /* Desktop Logged-out State */
+            <button 
+              onClick={() => navigate('/login')}
+              className="hidden md:block bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition cursor-pointer"
+            >
+              Login
+            </button>
+          )}
 
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -133,16 +157,32 @@ export default function Navbar() {
           >
             Contact
           </NavLink>
+
+          {/* Mobile Auth Button */}
           <div className="pt-2 border-t border-gray-100">
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/login');
-              }}
-              className="w-full text-center bg-emerald-800 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition"
-            >
-              Login
-            </button>
+            {user ? (
+              <div className="space-y-2">
+                <div className="text-xs font-semibold text-emerald-950 px-1 py-1">
+                  Signed in as <strong>{user.fullName || user.firstName || 'User'}</strong>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-center bg-red-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate('/login');
+                }}
+                className="w-full text-center bg-emerald-800 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition"
+              >
+                Login
+              </button>
+            )}
           </div>
         </nav>
       )}

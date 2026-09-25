@@ -15,14 +15,53 @@ export default function UserRegister() {
     zone: '',
   });
 
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('User Sign Up Data:', formData);
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          role: 'user',
+        }),
+      });
+
+      // Safely parse response content
+      const contentType = response.headers.get('content-type');
+      let data;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Server returned non-JSON response (${response.status})`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      alert('Registration successful!');
+      navigate('/login/user');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,6 +91,13 @@ export default function UserRegister() {
               Stay connected with your community and access local services easily.
             </p>
           </div>
+
+          {/* Error Message Banner */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 text-xs rounded-xl text-center font-medium">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-left">
             
@@ -91,7 +137,7 @@ export default function UserRegister() {
             {/* Row 2: Phone Number, Gender & Citizen/Boarder */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
               
-              {/* Phone Number (Span 5) */}
+              {/* Phone Number */}
               <div className="sm:col-span-5 space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Phone Number
@@ -112,7 +158,7 @@ export default function UserRegister() {
                 </div>
               </div>
 
-              {/* Gender Radio Buttons (Span 3) */}
+              {/* Gender Radio Buttons */}
               <div className="sm:col-span-3 space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Gender
@@ -125,6 +171,7 @@ export default function UserRegister() {
                       value="male"
                       checked={formData.gender === 'male'}
                       onChange={handleChange}
+                      required
                       className="accent-emerald-700"
                     />
                     <span>Male</span>
@@ -136,6 +183,7 @@ export default function UserRegister() {
                       value="female"
                       checked={formData.gender === 'female'}
                       onChange={handleChange}
+                      required
                       className="accent-emerald-700"
                     />
                     <span>Female</span>
@@ -143,7 +191,7 @@ export default function UserRegister() {
                 </div>
               </div>
 
-              {/* Citizen / Boarder Dropdown (Span 4) */}
+              {/* Citizen / Boarder Dropdown */}
               <div className="sm:col-span-4 space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Citizen / Boarder
@@ -209,9 +257,10 @@ export default function UserRegister() {
             <div className="pt-4 flex flex-col items-center space-y-3">
               <button
                 type="submit"
-                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all"
+                disabled={loading}
+                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all disabled:opacity-50"
               >
-                Create
+                {loading ? 'Creating...' : 'Create'}
               </button>
 
               <p className="text-xs text-gray-600">

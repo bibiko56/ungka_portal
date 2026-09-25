@@ -1,74 +1,112 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Code, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    code: '',
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showCode, setShowCode] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (errorMsg) setErrorMsg('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Admin Sign In Data:', formData);
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Admin login failed');
+      }
+
+      // Save token & user info in Auth Context
+      login(data.user, data.token);
+
+      // Navigate to Admin Dashboard upon successful login
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-white relative overflow-hidden font-sans">
       
       {/* Main Container */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-lg bg-white text-emerald-950 rounded-3xl p-8 sm:p-12 shadow-2xl border-2 border-emerald-600 text-center space-y-6 relative">
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md bg-white text-emerald-950 rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-emerald-600 relative">
           
-          {/* Go Back Button */}
+          {/* Back Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/')}
             type="button"
             className="absolute left-6 top-6 p-2 text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 rounded-full transition-all"
-            title="Go Back"
+            title="Return to Home"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
 
           {/* Header Text */}
-          <div className="space-y-2 pt-2">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wide text-emerald-950">
-              Admin Sign In
+          <div className="text-center space-y-2 mb-6 pt-2">
+            <div className="w-12 h-12 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-extrabold tracking-wide text-emerald-950">
+              Admin Portal
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 font-medium max-w-md mx-auto leading-relaxed">
-              Sign in to access the Barangay Ungka II Management System.
+            <p className="text-xs text-gray-600 font-medium">
+              Sign in to manage barangay services and account approvals.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 text-left pt-2">
+          {/* Error Alert */}
+          {errorMsg && (
+            <div className="bg-red-50 text-red-700 text-xs font-semibold p-3 rounded-xl border border-red-200 text-left mb-4">
+              {errorMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4 text-left">
             
             {/* Email Field */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-emerald-950 block ml-1">
-                Email Address
+                Admin Email
               </label>
               <div className="relative flex items-center">
-                <div className="absolute left-4 text-emerald-800">
-                  <Mail className="w-5 h-5" />
+                <div className="absolute left-3 text-emerald-800">
+                  <Mail className="w-4 h-4" />
                 </div>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Admin@example.com"
+                  placeholder="admin@ungka2.gov.ph"
                   required
-                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-sm rounded-xl pl-12 pr-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                 />
               </div>
             </div>
@@ -79,74 +117,35 @@ export default function AdminLogin() {
                 Password
               </label>
               <div className="relative flex items-center">
-                <div className="absolute left-4 text-emerald-800">
-                  <Lock className="w-5 h-5" />
+                <div className="absolute left-3 text-emerald-800">
+                  <Lock className="w-4 h-4" />
                 </div>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
-                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-sm rounded-xl pl-12 pr-12 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 text-gray-500 hover:text-emerald-800 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              <div className="text-right pt-1">
-                <a href="#forgot" className="text-xs font-semibold text-emerald-800 hover:underline">
-                  Forgot Password?
-                </a>
               </div>
             </div>
 
-            {/* Code Field */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-emerald-950 block ml-1">
-                Code
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-4 text-emerald-800">
-                  <Code className="w-5 h-5" />
-                </div>
-                <input
-                  type={showCode ? "text" : "password"}
-                  name="code"
-                  value={formData.code}
-                  onChange={handleChange}
-                  placeholder="Enter Your Code"
-                  required
-                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-sm rounded-xl pl-12 pr-12 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCode(!showCode)}
-                  className="absolute right-4 text-gray-500 hover:text-emerald-800 transition-colors"
-                >
-                  {showCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Button & Switch Link */}
+            {/* Action Buttons & Links */}
             <div className="pt-4 flex flex-col items-center space-y-3">
               <button
                 type="submit"
-                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all"
+                disabled={loading}
+                className="w-full bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all disabled:opacity-50"
               >
-                Sign In
+                {loading ? 'Authenticating...' : 'Sign In'}
               </button>
 
               <p className="text-xs text-gray-600">
-                Don't have an account?{' '}
+                Need an admin account?{' '}
                 <Link to="/register/admin" className="font-bold underline text-emerald-800 hover:text-emerald-950">
-                  Sign Up
+                  Register here
                 </Link>
               </p>
             </div>

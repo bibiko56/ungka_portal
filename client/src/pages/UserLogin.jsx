@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../context/AuthContext'; // 1. Import useAuth hook
 
 export default function UserLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // 2. Consume login function from context
 
   const [formData, setFormData] = useState({
     email: '',
@@ -11,14 +13,44 @@ export default function UserLogin() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errorMsg) setErrorMsg(''); // Clear error state as user types
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('User Sign In Data:', formData);
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // 3. Pass user and token to AuthContext (it updates state & localStorage together)
+      login(data.user, data.token);
+
+      // Redirect to dashboard or home page upon successful login
+      navigate('/');
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -55,6 +87,13 @@ export default function UserLogin() {
               Sign in to access Barangay Ungka II services and updates.
             </p>
           </div>
+
+          {/* Dynamic Error Alert */}
+          {errorMsg && (
+            <div className="bg-red-50 text-red-700 text-xs font-semibold p-3 rounded-xl border border-red-200 text-left">
+              {errorMsg}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-left pt-2">
             
@@ -116,9 +155,10 @@ export default function UserLogin() {
             <div className="pt-2 flex flex-col items-center space-y-3">
               <button
                 type="submit"
-                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all"
+                disabled={loading}
+                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all disabled:opacity-50"
               >
-                Sign In
+                {loading ? 'Signing In...' : 'Sign In'}
               </button>
 
               <p className="text-xs text-gray-600">

@@ -17,17 +17,24 @@ import BarangayHallServices from './components/BarangayHallServices';
 import StartUServeCTA from './components/StartUServeCTA';
 import Footer from './components/Footer';
 
+// Page Imports
 import Volunteer from './pages/Volunteer';
 import NewsUpdate from './pages/NewsUpdate';
 import Services from './pages/Services';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+// Auth Page Imports
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import UserLogin from './pages/UserLogin';
 import UserRegister from './pages/UserRegister';
 import AdminRegister from './pages/AdminRegister';
+import AdminDashboard from './pages/AdminDashboard'; // Added import
+
+// Component & Context Imports
+import ProtectedRoute from './components/ProtectedRoute'; // Added import
+import { AuthProvider } from './context/AuthContext';
 
 function Home() {
   return (
@@ -52,25 +59,40 @@ function Home() {
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/health-center" element={<HealthCenterServices />} />
-          <Route path="/news" element={<NewsUpdate />} />
-          <Route path="/volunteer" element={<Volunteer />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login/admin" element={<AdminLogin />} />
-          <Route path="/login/user" element={<UserLogin />} />
-          <Route path="/register/user" element={<UserRegister />} />
-          <Route path="/register/admin" element={<AdminRegister />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen flex flex-col bg-white">
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/health-center" element={<HealthCenterServices />} />
+            <Route path="/news" element={<NewsUpdate />} />
+            <Route path="/volunteer" element={<Volunteer />} />
+            <Route path="/contact" element={<Contact />} />
+
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/login/admin" element={<AdminLogin />} />
+            <Route path="/login/user" element={<UserLogin />} />
+            <Route path="/register/user" element={<UserRegister />} />
+            <Route path="/register/admin" element={<AdminRegister />} />
+
+            {/* Protected Admin Routes */}
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }

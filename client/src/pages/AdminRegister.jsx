@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Phone, CheckCircle2 } from 'lucide-react';
 
 export default function AdminRegister() {
   const navigate = useNavigate();
@@ -8,29 +8,62 @@ export default function AdminRegister() {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
-    verificationCode: '',
   });
+
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    if (errorMsg) setErrorMsg('');
   };
 
-  const handleGenerateCode = () => {
-    // Generate a quick random verification code or hook into your API logic
-    const generated = Math.floor(100000 + Math.random() * 900000).toString();
-    setFormData((prev) => ({ ...prev, verificationCode: generated }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setErrorMsg("Passwords do not match!");
       return;
     }
-    console.log('Admin Sign Up Data:', formData);
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/admin/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Admin registration failed');
+      }
+
+      // Trigger modal notification (Do NOT call login context)
+      setShowPendingModal(true);
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowPendingModal(false);
+    navigate('/'); // Navigate to homepage logged out
   };
 
   return (
@@ -60,6 +93,13 @@ export default function AdminRegister() {
               Stay connected with your community and access local services easily.
             </p>
           </div>
+
+          {/* Error Alert */}
+          {errorMsg && (
+            <div className="bg-red-50 text-red-700 text-xs font-semibold p-3 rounded-xl border border-red-200 text-left mb-4">
+              {errorMsg}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-left">
             
@@ -96,8 +136,28 @@ export default function AdminRegister() {
               </div>
             </div>
 
-            {/* Row 2: Password & Generate Verification Code */}
+            {/* Row 2: Phone Number & Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-emerald-950 block ml-1">
+                  Phone Number
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3 text-emerald-800">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    placeholder="0912 345 6789"
+                    required
+                    className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Password
@@ -112,33 +172,9 @@ export default function AdminRegister() {
                   className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl px-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                 />
               </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-emerald-950 block ml-1">
-                  Generate Verification Code
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    name="verificationCode"
-                    value={formData.verificationCode}
-                    onChange={handleChange}
-                    placeholder="Generate Verification Code"
-                    required
-                    className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-4 pr-24 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleGenerateCode}
-                    className="absolute right-1.5 text-xs font-bold bg-emerald-800 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-900 transition-all active:scale-95"
-                  >
-                    Generate
-                  </button>
-                </div>
-              </div>
             </div>
 
-            {/* Row 3: Confirm Password (Left-aligned column) */}
+            {/* Row 3: Confirm Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
@@ -156,13 +192,14 @@ export default function AdminRegister() {
               </div>
             </div>
 
-            {/* Submit Button & Switch Link */}
+            {/* Submit Button & Links */}
             <div className="pt-4 flex flex-col items-center space-y-3">
               <button
                 type="submit"
-                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all"
+                disabled={loading}
+                className="w-44 bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:bg-emerald-900 active:scale-95 transition-all disabled:opacity-50"
               >
-                Create
+                {loading ? 'Submitting...' : 'Create'}
               </button>
 
               <p className="text-[11px] text-gray-500 font-medium text-center">
@@ -180,6 +217,38 @@ export default function AdminRegister() {
           </form>
         </div>
       </main>
+
+      {/* Account Review Pending Modal */}
+      {showPendingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-emerald-600 text-center space-y-4 animate-in fade-in zoom-in duration-200">
+            <div className="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <h3 className="text-xl font-extrabold text-emerald-950">
+              Account Registration Submitted
+            </h3>
+
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              Your admin account request has been registered and is currently <strong>under review</strong> by system administrators.
+            </p>
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 font-medium">
+              A verification code and status update will be sent via SMS to{' '}
+              <span className="font-bold">{formData.phoneNumber || 'your registered phone number'}</span> upon approval.
+            </div>
+
+            <button
+              onClick={handleModalClose}
+              type="button"
+              className="w-full bg-emerald-800 text-white font-bold text-sm py-3 rounded-xl hover:bg-emerald-900 transition-all active:scale-95 shadow-md"
+            >
+              Return to Homepage
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Footer Bar */}
       <footer className="relative z-10 bg-emerald-800 text-emerald-100 text-xs py-3 px-6 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-emerald-700">
