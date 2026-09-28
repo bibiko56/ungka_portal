@@ -3,67 +3,53 @@ import { ShieldCheck, HeartHandshake, Users } from 'lucide-react';
 
 export default function AboutUsSection() {
   return (
-    <section className="w-full bg-[#1e4620] text-white py-16 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden">
-      
-      {/* Decorative background glow accents */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-400/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-5xl mx-auto space-y-12 relative z-10">
+    <section className="w-full bg-white text-gray-900 py-16 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-4xl mx-auto space-y-12 border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-sm">
         
-        {/* Section Heading with Accent Highlight */}
-        <div className="text-center space-y-3">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-            About <span className="text-lime-400">Us</span>
+        {/* Simple Heading */}
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-emerald-950">
+            About Us
           </h2>
-          <div className="w-20 h-1 bg-lime-400 mx-auto rounded-full" />
+          <div className="w-12 h-1 bg-emerald-600 mx-auto rounded-full" />
         </div>
 
         {/* Intro Paragraph */}
-        <p className="text-center text-emerald-100 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto font-normal">
-          Barangay Ungka II is a growing and vibrant community committed to providing accessible, responsive, and reliable services to its residents. Through the efforts of its barangay officials, health center personnel, and community workers, the barangay strives to address the needs of every resident and promote the overall welfare of the community.
+        <p className="text-center text-gray-600 text-base leading-relaxed max-w-2xl mx-auto">
+          Barangay Ungka II is a growing and vibrant community committed to providing accessible, responsive, and reliable services to its residents through dedicated local governance.
         </p>
 
-        {/* Key Focus Cards */}
+        {/* Clean 3-Column Feature List with borders */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-          
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 hover:bg-white/15 transition-all space-y-3">
-            <div className="w-12 h-12 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center">
+          <div className="space-y-2 flex flex-col items-center text-center p-6 bg-gray-50/50 border border-gray-100 rounded-2xl">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-1">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Efficient Service</h3>
-            <p className="text-xs text-emerald-100/90 leading-relaxed">
-              Focusing on public service, health, safety, and community development to deliver reliable support.
+            <h3 className="text-base font-bold text-gray-900">Efficient Service</h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Focusing on public health, safety, and reliable community development support.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 hover:bg-white/15 transition-all space-y-3">
-            <div className="w-12 h-12 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center">
+          <div className="space-y-2 flex flex-col items-center text-center p-6 bg-gray-50/50 border border-gray-100 rounded-2xl">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-1">
               <HeartHandshake className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Digital Innovation</h3>
-            <p className="text-xs text-emerald-100/90 leading-relaxed">
-              Embracing digital solutions like UServe to make barangay and health center services seamless to access.
+            <h3 className="text-base font-bold text-gray-900">Digital Innovation</h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Embracing platforms like UServe to make barangay services seamless to access.
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 hover:bg-white/15 transition-all space-y-3">
-            <div className="w-12 h-12 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center">
+          <div className="space-y-2 flex flex-col items-center text-center p-6 bg-gray-50/50 border border-gray-100 rounded-2xl">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-1">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Connected Community</h3>
-            <p className="text-xs text-emerald-100/90 leading-relaxed">
-              Connecting residents directly with local officials to access essential assistance faster.
+            <h3 className="text-base font-bold text-gray-900">Connected Community</h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Bridging residents directly with local officials for faster assistance.
             </p>
           </div>
-
-        </div>
-
-        {/* Closing Mission Statement Card */}
-        <div className="bg-emerald-950/60 border border-emerald-700/50 rounded-2xl p-6 sm:p-8 text-center max-w-3xl mx-auto shadow-inner">
-          <p className="text-sm sm:text-base text-emerald-100 leading-relaxed font-medium">
-            Together, Barangay Ungka II and its residents work toward building a safe, healthy, inclusive, and progressive community where everyone can receive the support and services they deserve.
-          </p>
         </div>
 
       </div>

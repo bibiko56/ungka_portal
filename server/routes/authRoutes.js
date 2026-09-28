@@ -1,19 +1,19 @@
 import express from 'express';
-import { 
-  register, 
-  login, 
-  adminRegister, 
-  adminLogin 
+import {
+  register, login, adminRegister, adminLogin,
+  getPendingAccounts, approveAccount, declineAccount,
 } from '../controllers/authController.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Standard User Routes
 router.post('/register', register);
 router.post('/login', login);
-
-// Admin User Routes
 router.post('/admin/register', adminRegister);
 router.post('/admin/login', adminLogin);
+
+router.get('/pending', protect, adminOnly, getPendingAccounts);
+router.put('/approve/:type/:id', protect, adminOnly, approveAccount);
+router.put('/decline/:type/:id', protect, adminOnly, declineAccount);
 
 export default router;

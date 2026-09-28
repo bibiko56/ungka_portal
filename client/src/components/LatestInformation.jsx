@@ -26,7 +26,7 @@ const newsItems = [
 
 export default function LatestInformation() {
   return (
-    <section className="bg-emerald-950/20 py-12 px-4 sm:px-8">
+    <section className="bg-white py-12 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto bg-[#315742] rounded-3xl p-6 sm:p-10 shadow-2xl relative">
         
         {/* Angled Badge Title */}

@@ -1,11 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // <-- 1. Import useNavigate
 
 export default function Hero() {
+  const navigate = useNavigate(); // <-- 2. Initialize navigate
+
   return (
     <section 
-  className="relative w-full min-h-[500px] md:min-h-[600px] bg-cover bg-center text-white overflow-hidden rounded-b-[40px] shadow-lg"
-  style={{ backgroundImage: "url('barangay_hall.png')" }}
->
+      className="relative w-full min-h-[500px] md:min-h-[600px] bg-cover bg-center text-white overflow-hidden rounded-b-[40px] shadow-lg"
+      style={{ backgroundImage: "url('barangay_hall.png')" }}
+    >
       {/* Dark Teal/Green Visual Overlay */}
       <div className="absolute inset-0 bg-emerald-950/75 mix-blend-multiply pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/95 via-transparent to-transparent pointer-events-none" />
@@ -46,28 +49,22 @@ export default function Hero() {
             <p className="text-sm md:text-lg text-emerald-100/90 leading-relaxed font-light drop-shadow-sm max-w-lg">
               Welcome to Ungka II Voluntary and information Website
             </p>
-
-            <div className="pt-2">
-              <a
-                href="#about"
-                className="inline-block bg-white text-emerald-950 font-bold px-6 py-2.5 rounded-full shadow-md hover:bg-emerald-100 transition text-sm"
-              >
-                About-Ungka II
-              </a>
-            </div>
           </div>
 
           {/* Right Block: Glassmorphic Cards */}
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             
             {/* Card 1: About Ungka II */}
-            <div className="flex-1 lg:w-56 bg-emerald-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex flex-col justify-between min-h-[160px] shadow-xl relative overflow-hidden group hover:bg-emerald-900/50 transition duration-300">
+            <div 
+              onClick={() => navigate('/about')} // <-- 3. Route to your About page route
+              className="flex-1 lg:w-56 bg-emerald-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex flex-col justify-between min-h-[160px] shadow-xl relative overflow-hidden group hover:bg-emerald-900/50 transition duration-300 cursor-pointer"
+            >
               <div className="space-y-2">
                 <span className="text-[10px] uppercase tracking-wider font-semibold text-emerald-300">ABOUT UNGKA II</span>
                 <h3 className="text-base font-bold leading-tight">Learn More About Ungka II</h3>
               </div>
               <div className="self-end mt-4">
-                <button className="w-8 h-8 rounded-full bg-emerald-600/80 hover:bg-emerald-500 flex items-center justify-center text-white transition">
+                <button className="w-8 h-8 rounded-full bg-emerald-600/80 hover:bg-emerald-500 flex items-center justify-center text-white transition pointer-events-none">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -76,7 +73,10 @@ export default function Hero() {
             </div>
 
             {/* Card 2: Barangay Officials */}
-            <div className="flex-1 lg:w-56 bg-emerald-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex flex-col justify-between min-h-[160px] shadow-xl relative overflow-hidden group hover:bg-emerald-900/50 transition duration-300">
+            <div 
+              onClick={() => navigate('/officials')} // <-- 4. Route to your Officials page route (change string if your route path differs)
+              className="flex-1 lg:w-56 bg-emerald-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex flex-col justify-between min-h-[160px] shadow-xl relative overflow-hidden group hover:bg-emerald-900/50 transition duration-300 cursor-pointer"
+            >
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <span className="text-[10px] uppercase tracking-wider font-semibold text-emerald-300">BARANGAY OFFICIALS</span>
@@ -85,7 +85,7 @@ export default function Hero() {
                 <h3 className="text-base font-bold leading-tight">Know Your Public Servants</h3>
               </div>
               <div className="self-end mt-4">
-                <button className="w-8 h-8 rounded-full bg-emerald-600/80 hover:bg-emerald-500 flex items-center justify-center text-white transition">
+                <button className="w-8 h-8 rounded-full bg-emerald-600/80 hover:bg-emerald-500 flex items-center justify-center text-white transition pointer-events-none">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>

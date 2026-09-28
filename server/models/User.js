@@ -9,7 +9,11 @@ const userSchema = new mongoose.Schema({
   identity: { type: String, required: true },
   password: { type: String, required: true },
   zone: { type: String, required: true },
-  role: { type: String, default: 'user' },
-}, { timestamps: true });
+  role: { type: String, 
+    enum: ['user', 'admin'],
+    default: 'user' },
+    isApproved: { type: Boolean, default: false },
+    }, 
+        { timestamps: true });
 
 export default mongoose.model('User', userSchema);

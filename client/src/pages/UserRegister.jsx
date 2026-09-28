@@ -55,7 +55,7 @@ export default function UserRegister() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      alert('Registration successful!');
+      alert('Registration submitted! You will receive an SMS once your account is approved.');
       navigate('/login/user');
     } catch (err) {
       setError(err.message);

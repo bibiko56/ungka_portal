@@ -1,191 +1,107 @@
-import React, { useState } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // 1. Import useAuth
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // 2. Access user state and logout handler
+  const location = useLocation();
+
+  useEffect(() => {
+    // Read logged in user details from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error('Error reading user data:', err);
+      }
+    } else {
+      setUser(null);
+    }
+  }, [location]); // Re-run check whenever route changes
 
   const handleLogout = () => {
-    logout();
-    setIsOpen(false);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
     navigate('/login');
   };
 
-  // Helper for conditional styling on active routes
-  const linkClass = ({ isActive }) =>
-    `transition-colors duration-200 text-sm font-medium ${
-      isActive
-        ? 'text-emerald-800 font-bold border-b-2 border-emerald-800 pb-1'
-        : 'text-gray-700 hover:text-emerald-700'
-    }`;
+  // Strictly check if logged in user is an admin
+  const isAdmin = user && (user.role === 'admin' || user.isAdmin === true);
+
+  const navLinkClass = (path) => {
+  const isActive = location.pathname === path;
+  return `relative pb-1 transition-colors after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:bg-emerald-800 after:transition-all after:duration-300 ${
+    isActive
+      ? 'text-emerald-800 font-bold after:w-full'
+      : 'hover:text-emerald-800 after:w-0 hover:after:w-full'
+  }`;
+};
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <nav className="bg-white border-b border-gray-100 py-3 px-6 shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
         
-        {/* Brand Logo & Name */}
-        <Link to="/" className="flex items-center space-x-3 cursor-pointer">
-          <div className="w-10 h-10 bg-emerald-800 text-white rounded-full flex items-center justify-center font-bold text-lg">
+        {/* Brand Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-emerald-800 text-white flex items-center justify-center font-bold text-sm">
             U
           </div>
-          <span className="font-bold text-lg text-emerald-950">
-            UServe
-          </span>
+          <span className="font-bold text-lg text-emerald-950">UServe</span>
         </Link>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex space-x-8">
-          <NavLink to="/" end className={linkClass}>
-            Home
-          </NavLink>
-          <NavLink to="/about" className={linkClass}>
-            About Us
-          </NavLink>
-          <NavLink to="/services" className={linkClass}>
-            Services
-          </NavLink>
-          <NavLink to="/news" className={linkClass}>
-            News & Updates
-          </NavLink>
-          <NavLink to="/volunteer" className={linkClass}>
-            Volunteer
-          </NavLink>
-          <NavLink to="/contact" className={linkClass}>
-            Contact
-          </NavLink>
-        </nav>
+        {/* Navigation Links */}
+<div className="hidden md:flex items-center gap-5 text-sm font-medium text-gray-600">
+  <Link to="/" className={navLinkClass('/')}>Home</Link>
+  <Link to="/about" className={navLinkClass('/about')}>About Us</Link>
+  <Link to="/services" className={navLinkClass('/services')}>Services</Link>
+  <Link to="/news" className={navLinkClass('/news')}>News & Updates</Link>
+  <Link to="/volunteer" className={navLinkClass('/volunteer')}>Volunteer & Events</Link>
+  <Link to="/report-issue" className={navLinkClass('/report-issue')}>Report Issue</Link>
+  <Link to="/contact" className={navLinkClass('/contact')}>Contact</Link>
 
-        {/* Action Button & Mobile Toggle */}
-        <div className="flex items-center space-x-3">
+  {/* 🟢 EXCLUSIVE ADMIN DASHBOARD LINK — kept as a button style, no underline */}
+  {isAdmin && (
+    <Link
+      to="/admin/dashboard"
+      className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors ${
+        location.pathname === '/admin/dashboard'
+          ? 'bg-emerald-800 text-white'
+          : 'bg-emerald-50 text-emerald-900 border border-emerald-800/30 hover:bg-emerald-100'
+      }`}
+    >
+      Dashboard
+    </Link>
+  )}
+</div>
+
+        {/* User Auth Section */}
+        <div className="flex items-center gap-4">
           {user ? (
-            /* Desktop Logged-in State */
-            <div className="hidden md:flex items-center space-x-3">
-              <span className="text-xs font-semibold text-emerald-950">
-                Hi, {user.fullName || user.firstName || 'User'}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-500 font-medium hidden sm:inline">
+                Hi, <strong className="text-gray-800">{user.fullName || 'there'}</strong>
               </span>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition cursor-pointer"
+                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
               >
                 Logout
               </button>
             </div>
           ) : (
-            /* Desktop Logged-out State */
-            <button 
-              onClick={() => navigate('/login')}
-              className="hidden md:block bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition cursor-pointer"
+            <Link
+              to="/login"
+              className="bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
             >
               Login
-            </button>
+            </Link>
           )}
-
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-700 focus:outline-none p-1"
-            aria-label="Toggle Navigation"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
         </div>
 
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-2">
-          <NavLink
-            to="/"
-            end
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/about"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            About Us
-          </NavLink>
-          <NavLink
-            to="/services"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            Services
-          </NavLink>
-          <NavLink
-            to="/news"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            News & Updates
-          </NavLink>
-          <NavLink
-            to="/volunteer"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            Volunteer
-          </NavLink>
-          <NavLink
-            to="/contact"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `block py-1 text-sm font-medium ${isActive ? 'text-emerald-800 font-bold' : 'text-gray-700'}`
-            }
-          >
-            Contact
-          </NavLink>
-
-          {/* Mobile Auth Button */}
-          <div className="pt-2 border-t border-gray-100">
-            {user ? (
-              <div className="space-y-2">
-                <div className="text-xs font-semibold text-emerald-950 px-1 py-1">
-                  Signed in as <strong>{user.fullName || user.firstName || 'User'}</strong>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-center bg-red-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate('/login');
-                }}
-                className="w-full text-center bg-emerald-800 text-white py-2 rounded-lg text-sm font-semibold hover:bg-emerald-900 transition"
-              >
-                Login
-              </button>
-            )}
-          </div>
-        </nav>
-      )}
-    </header>
+    </nav>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Population() {
+export default function Population({ showBanner = true }) { // <-- Added prop with default true
   return (
     <div className="bg-white text-gray-800 py-16 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto space-y-16">
@@ -39,32 +39,34 @@ export default function Population() {
 
         </div>
 
-        {/* BOTTOM SECTION: Hotline Assistance Banner */}
-        <div className="bg-[#1e3e2b] rounded-2xl p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-xl">
-          
-          {/* Illustration Container */}
-          <div className="flex-shrink-0 w-36 sm:w-44">
-            <img
-              src="avatar.png" 
-              alt="Support Avatar"
-              className="w-full h-auto object-contain"
-            />
-          </div>
+        {/* BOTTOM SECTION: Hotline Assistance Banner (Rendered conditionally) */}
+        {showBanner && (
+          <div className="bg-[#1e3e2b] rounded-2xl p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-xl">
+            
+            {/* Illustration Container */}
+            <div className="flex-shrink-0 w-36 sm:w-44">
+              <img
+                src="avatar.png" 
+                alt="Support Avatar"
+                className="w-full h-auto object-contain"
+              />
+            </div>
 
-          {/* Text and Hotline Details */}
-          <div className="flex-1 text-center md:text-left space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-bold">
-              Do You Need Assistance?
-            </h3>
-            <p className="text-emerald-100/80 text-xs sm:text-sm max-w-xl">
-              Our support team is ready to help you with your concerns and emergency needs.
-            </p>
-            <p className="text-xl sm:text-2xl font-black text-white pt-2">
-              Barangay Hotline: <span className="text-emerald-300">0912 345 6789</span>
-            </p>
-          </div>
+            {/* Text and Hotline Details */}
+            <div className="flex-1 text-center md:text-left space-y-2">
+              <h3 className="text-2xl sm:text-3xl font-bold">
+                Do You Need Assistance?
+              </h3>
+              <p className="text-emerald-100/80 text-xs sm:text-sm max-w-xl">
+                Our support team is ready to help you with your concerns and emergency needs.
+              </p>
+              <p className="text-xl sm:text-2xl font-black text-white pt-2">
+                Barangay Hotline: <span className="text-emerald-300">0912 345 6789</span>
+              </p>
+            </div>
 
-        </div>
+          </div>
+        )}
 
       </div>
     </div>

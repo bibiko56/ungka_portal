@@ -1,5 +1,6 @@
 import User from '../models/User.js'; // Adjust the model path to match your folder structure
 import Admin from '../models/Admin.js';
+import { sendSms } from '../utils/sendSms.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -8,35 +9,30 @@ export const register = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, gender, identity, password, zone, role } = req.body;
 
-    // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password if not using a pre-save hook in Mongoose
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
     const user = await User.create({
-      fullName,
-      email,
-      phoneNumber,
-      gender,
-      identity,
+      fullName, email, phoneNumber, gender, identity,
       password: hashedPassword,
       zone,
       role: role || 'user',
+      isApproved: false,
     });
 
     res.status(201).json({
-      message: 'User registered successfully',
+      message: 'Registration submitted. You will be notified by SMS once your account is approved.',
       user: {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        isApproved: user.isApproved,
       },
     });
   } catch (error) {
@@ -45,7 +41,6 @@ export const register = async (req, res) => {
   }
 };
 
-// Login User
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -53,6 +48,12 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.isApproved === false) {
+      return res.status(403).json({
+        message: 'Your account is pending approval. You will receive an SMS once approved.',
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -69,12 +70,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-      },
+      user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role },
     });
   } catch (error) {
     console.error('Login Error:', error);
@@ -160,5 +156,74 @@ export const adminLogin = async (req, res) => {
   } catch (error) {
     console.error('Admin Login Error:', error);
     res.status(500).json({ message: error.message || 'Server error during admin login' });
+  }
+};
+
+// GET pending users, for the Approvals page
+// GET both pending users and pending admins
+export const getPendingAccounts = async (req, res) => {
+  try {
+    const pendingUsers = await User.find({ isApproved: false }).select('-password');
+    const pendingAdmins = await Admin.find({ isApproved: false }).select('-password');
+
+    const combined = [
+      ...pendingUsers.map((u) => ({ ...u.toObject(), accountType: 'user' })),
+      ...pendingAdmins.map((a) => ({ ...a.toObject(), accountType: 'admin' })),
+    ];
+
+    res.status(200).json(combined);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching pending accounts' });
+  }
+};
+
+// Approve either a user or an admin
+export const approveAccount = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const Model = type === 'admin' ? Admin : User;
+
+    const account = await Model.findById(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    account.isApproved = true;
+    await account.save();
+
+    await sendSms(
+      account.phoneNumber,
+      `Hi ${account.fullName}, your Ungka Portal ${type} account has been approved. You can now log in.`
+    );
+
+    res.status(200).json({ message: `${type} approved and notified by SMS`, account });
+  } catch (error) {
+    console.error('Approve Account Error:', error);
+    res.status(500).json({ message: 'Server error approving account' });
+  }
+};
+
+// Decline either a user or an admin
+export const declineAccount = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const Model = type === 'admin' ? Admin : User;
+
+    const account = await Model.findById(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    await sendSms(
+      account.phoneNumber,
+      `Hi ${account.fullName}, your Ungka Portal ${type} registration was not approved. Please visit the barangay office for details.`
+    );
+
+    await account.deleteOne();
+
+    res.status(200).json({ message: `${type} declined and notified by SMS` });
+  } catch (error) {
+    console.error('Decline Account Error:', error);
+    res.status(500).json({ message: 'Server error declining account' });
   }
 };

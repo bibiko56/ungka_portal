@@ -44,8 +44,12 @@ export default function UserLogin() {
       // 3. Pass user and token to AuthContext (it updates state & localStorage together)
       login(data.user, data.token);
 
-      // Redirect to dashboard or home page upon successful login
-      navigate('/');
+      // 🟢 Dynamic Redirect: Send admins to /admin and normal users to /
+      if (data.user?.role === 'admin' || data.user?.isAdmin) {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setErrorMsg(err.message);
     } finally {
