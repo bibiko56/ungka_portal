@@ -86,7 +86,7 @@ export default function UpcomingEvents() {
               </div>
 
               {/* Pop-out Right Cutout Image */}
-              <div className="absolute right-2 -top-6 bottom-0 w-36 sm:w-44 pointer-events-none flex items-end justify-end">
+              <div className="absolute right-0 -top-6 bottom-5 w-36 sm:w-44 pointer-events-none flex items-end justify-end">
                 <img
                   src={event.image}
                   alt={event.title}

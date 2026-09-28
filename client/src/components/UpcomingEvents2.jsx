@@ -74,10 +74,30 @@ const categories = ['All', 'Healthcare', 'Aid & Assistance', 'Barangay Programs'
 export default function UpcomingEvents2() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 9; // Assuming you have 9 total pages
 
   const filteredEvents = selectedCategory === 'All'
     ? eventsData
     : eventsData.filter((event) => event.filterCategory === selectedCategory);
+
+  // Helper function to generate dynamic pagination numbers with ellipses
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 4) {
+        pages.push(1, 2, 3, 4, '...', totalPages - 1, totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        pages.push(1, 2, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    return pages;
+  };
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8">
@@ -88,7 +108,10 @@ export default function UpcomingEvents2() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => {
+                setSelectedCategory(cat);
+                setCurrentPage(1); // Reset to page 1 on category change
+              }}
               className={`px-6 py-2.5 rounded-full font-bold text-sm sm:text-base border-2 transition shadow-sm ${
                 selectedCategory === cat
                   ? 'bg-[#1e3e2b] text-white border-[#1e3e2b]'
@@ -159,18 +182,22 @@ export default function UpcomingEvents2() {
         <div className="flex items-center justify-center gap-2 pt-8 font-bold text-emerald-950">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-1 text-sm hover:text-emerald-700 transition"
+            disabled={currentPage === 1}
+            className="px-3 py-1 text-sm hover:text-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Preview
+            Previous
           </button>
 
-          {[1, 2, 3, '...', 7, 8, 9].map((page, idx) => (
+          {getPageNumbers().map((page, idx) => (
             <button
               key={idx}
               onClick={() => typeof page === 'number' && setCurrentPage(page)}
+              disabled={page === '...'}
               className={`w-9 h-9 rounded-lg border-2 flex items-center justify-center text-sm transition ${
                 currentPage === page
                   ? 'bg-[#1e3e2b] text-white border-[#1e3e2b]'
+                  : page === '...'
+                  ? 'border-transparent cursor-default text-emerald-950'
                   : 'bg-white text-[#1e3e2b] border-[#1e3e2b] hover:bg-emerald-50'
               }`}
             >
@@ -179,8 +206,9 @@ export default function UpcomingEvents2() {
           ))}
 
           <button
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="px-3 py-1 text-sm hover:text-emerald-700 transition"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 text-sm hover:text-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
