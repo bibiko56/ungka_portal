@@ -123,37 +123,37 @@ export default function UserLogin() {
             </div>
 
             {/* Password Field */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-bold text-emerald-950 block">
-                  Password
-                </label>
-                <a href="#forgot" className="text-xs font-semibold text-emerald-800 hover:underline">
-                  Forgot Password?
-                </a>
-              </div>
-              <div className="relative flex items-center">
-                <div className="absolute left-4 text-emerald-800">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••••••"
-                  required
-                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-sm rounded-xl pl-12 pr-12 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 text-gray-500 hover:text-emerald-800 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
+<div className="space-y-1">
+  <label className="text-xs font-bold text-emerald-950 block ml-1">
+    Password
+  </label>
+  <div className="relative flex items-center">
+    <div className="absolute left-4 text-emerald-800">
+      <Lock className="w-5 h-5" />
+    </div>
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="••••••••••••"
+      required
+      className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-sm rounded-xl pl-12 pr-12 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 text-gray-500 hover:text-emerald-800 transition-colors"
+    >
+      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+    </button>
+  </div>
+  <div className="text-right px-1 pt-1">
+    <Link to="/forgot-password/user" className="text-xs font-semibold text-emerald-800 hover:underline">
+      Forgot Password?
+    </Link>
+  </div>
+</div>
 
             {/* Submit Button & Switch Link */}
             <div className="pt-2 flex flex-col items-center space-y-3">

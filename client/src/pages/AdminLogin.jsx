@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -111,26 +113,38 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Password Field */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-emerald-950 block ml-1">
-                Password
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-3 text-emerald-800">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                />
-              </div>
-            </div>
+          {/* Password Field */}
+<div className="space-y-1">
+  <label className="text-xs font-bold text-emerald-950 block ml-1">
+    Password
+  </label>
+  <div className="relative flex items-center">
+    <div className="absolute left-3 text-emerald-800">
+      <Lock className="w-4 h-4" />
+    </div>
+    <input
+      type={showPassword ? 'text' : 'password'}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      placeholder="Enter your password"
+      required
+      className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-10 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 text-gray-500 hover:text-emerald-800 transition-colors"
+    >
+      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+    </button>
+  </div>
+  <div className="text-right px-1 pt-1">
+    <Link to="/forgot-password/admin" className="text-xs font-semibold text-emerald-800 hover:underline">
+      Forgot Password?
+    </Link>
+  </div>
+</div>
 
             {/* Action Buttons & Links */}
             <div className="pt-4 flex flex-col items-center space-y-3">

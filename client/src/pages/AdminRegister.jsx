@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, CheckCircle2 } from 'lucide-react';
+import { validatePassword } from '../utils/validatePassword';
+import PasswordChecklist from '../components/PasswordChecklist';
 
 export default function AdminRegister() {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function AdminRegister() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const [pwTouched, setPwTouched] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,8 +30,14 @@ export default function AdminRegister() {
     e.preventDefault();
     setErrorMsg('');
 
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setErrorMsg(passwordError);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setErrorMsg("Passwords do not match!");
+      setErrorMsg('Passwords do not match!');
       return;
     }
 
@@ -137,7 +146,7 @@ export default function AdminRegister() {
             </div>
 
             {/* Row 2: Phone Number & Password */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Phone Number
@@ -167,10 +176,12 @@ export default function AdminRegister() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onFocus={() => setPwTouched(true)}
                   placeholder="Enter your password"
                   required
                   className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl px-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                 />
+                <PasswordChecklist password={formData.password} show={pwTouched} />
               </div>
             </div>
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { validatePassword } from '../utils/validatePassword';
+import PasswordChecklist from '../components/PasswordChecklist';
 
 export default function UserRegister() {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export default function UserRegister() {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pwTouched, setPwTouched] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +29,13 @@ export default function UserRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -47,7 +57,6 @@ export default function UserRegister() {
       if (contentType && contentType.includes('application/json')) {
         data = await response.json();
       } else {
-        const text = await response.text();
         throw new Error(`Server returned non-JSON response (${response.status})`);
       }
 
@@ -213,7 +222,7 @@ export default function UserRegister() {
             </div>
 
             {/* Row 3: Password & Zone / Area */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">
                   Password
@@ -223,10 +232,12 @@ export default function UserRegister() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onFocus={() => setPwTouched(true)}
                   placeholder="Enter your password"
                   required
                   className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl px-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
                 />
+                <PasswordChecklist password={formData.password} show={pwTouched} />
               </div>
 
               <div className="space-y-1">

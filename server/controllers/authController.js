@@ -1,13 +1,28 @@
-import User from '../models/User.js'; // Adjust the model path to match your folder structure
-import Admin from '../models/Admin.js';
-import { sendSms } from '../utils/sendSms.js';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import Admin from '../models/Admin.js';
+import { sendSms } from '../utils/sendSms.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import { validatePassword } from '../utils/validatePassword.js';
+
+// Picks the right collection based on 'user' or 'admin'
+const getModel = (type) => (type === 'admin' ? Admin : User);
+
+/* ------------------------------------------------------------------ */
+/*  REGISTER / LOGIN                                                   */
+/* ------------------------------------------------------------------ */
 
 // Register User
 export const register = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, gender, identity, password, zone, role } = req.body;
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -41,6 +56,7 @@ export const register = async (req, res) => {
   }
 };
 
+// Login User
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -77,11 +93,17 @@ export const login = async (req, res) => {
     res.status(500).json({ message: error.message || 'Server error during login' });
   }
 };
-    export const adminRegister = async (req, res) => {
+
+// Register Admin
+export const adminRegister = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, password } = req.body;
 
-    // Check if admin already exists in Admin collection
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
+
     const adminExists = await Admin.findOne({ email });
     if (adminExists) {
       return res.status(400).json({ message: 'Admin account already exists with this email' });
@@ -120,7 +142,6 @@ export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Query Admin collection
     const admin = await Admin.findOne({ email });
     if (!admin) {
       return res.status(400).json({ message: 'Invalid credentials' });
@@ -159,7 +180,10 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// GET pending users, for the Approvals page
+/* ------------------------------------------------------------------ */
+/*  APPROVALS (admin only)                                             */
+/* ------------------------------------------------------------------ */
+
 // GET both pending users and pending admins
 export const getPendingAccounts = async (req, res) => {
   try {
@@ -181,9 +205,8 @@ export const getPendingAccounts = async (req, res) => {
 export const approveAccount = async (req, res) => {
   try {
     const { type, id } = req.params;
-    const Model = type === 'admin' ? Admin : User;
 
-    const account = await Model.findById(id);
+    const account = await getModel(type).findById(id);
     if (!account) {
       return res.status(404).json({ message: 'Account not found' });
     }
@@ -207,9 +230,8 @@ export const approveAccount = async (req, res) => {
 export const declineAccount = async (req, res) => {
   try {
     const { type, id } = req.params;
-    const Model = type === 'admin' ? Admin : User;
 
-    const account = await Model.findById(id);
+    const account = await getModel(type).findById(id);
     if (!account) {
       return res.status(404).json({ message: 'Account not found' });
     }
@@ -225,5 +247,122 @@ export const declineAccount = async (req, res) => {
   } catch (error) {
     console.error('Decline Account Error:', error);
     res.status(500).json({ message: 'Server error declining account' });
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/*  FORGOT PASSWORD                                                    */
+/* ------------------------------------------------------------------ */
+
+const findWithResetFields = (accountType, email) =>
+  getModel(accountType)
+    .findOne({ email })
+    .select('+resetCode +resetCodeExpires +resetAttempts');
+
+// Returns true only if the code is valid.
+// Wrong guesses are counted, and the code locks after 5.
+const checkResetCode = async (account, code) => {
+  if (!account || !account.resetCode || account.resetCodeExpires < new Date()) {
+    return false;
+  }
+
+  const match = await bcrypt.compare(String(code), account.resetCode);
+  if (!match) {
+    account.resetAttempts += 1;
+    if (account.resetAttempts >= 5) {
+      account.resetCode = undefined;
+      account.resetCodeExpires = undefined;
+    }
+    await account.save();
+    return false;
+  }
+  return true;
+};
+
+// Step 1: generate + "send" a code
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email, method, accountType } = req.body;
+
+    if (!['sms', 'email'].includes(method)) {
+      return res.status(400).json({ message: 'Please choose SMS or email' });
+    }
+
+    const account = await getModel(accountType).findOne({ email });
+
+    // Same response whether or not the account exists, so this
+    // can't be used to check who has an account
+    const response = { message: `If an account exists, a code was sent by ${method}.` };
+    if (!account) return res.status(200).json(response);
+
+    const code = String(crypto.randomInt(100000, 1000000)); // 6 digits
+    account.resetCode = await bcrypt.hash(code, 10);
+    account.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    account.resetAttempts = 0;
+    await account.save();
+
+    if (method === 'sms') {
+      await sendSms(account.phoneNumber, `Your Ungka Portal reset code is ${code}. It expires in 10 minutes.`);
+    } else {
+      await sendEmail(account.email, 'Ungka Portal password reset', `Your reset code is ${code}. It expires in 10 minutes.`);
+    }
+
+    // TESTING ONLY: shows the code on screen. Remove before launch.
+    if (process.env.NODE_ENV !== 'production') {
+      response.devCode = code;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Step 2: verify the code only
+export const verifyResetCode = async (req, res) => {
+  try {
+    const { email, accountType, code } = req.body;
+
+    const account = await findWithResetFields(accountType, email);
+    const valid = await checkResetCode(account, code);
+
+    if (!valid) {
+      return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+    res.status(200).json({ message: 'Code verified' });
+  } catch (error) {
+    console.error('Verify Reset Code Error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Step 3: set the new password (re-checks the code)
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, accountType, code, newPassword } = req.body;
+
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
+
+    const account = await findWithResetFields(accountType, email);
+    const valid = await checkResetCode(account, code);
+
+    if (!valid) {
+      return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+
+    account.password = await bcrypt.hash(newPassword, 10);
+    account.resetCode = undefined;
+    account.resetCodeExpires = undefined;
+    account.resetAttempts = 0;
+    await account.save();
+
+    res.status(200).json({ message: 'Password reset successful. You can now log in.' });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

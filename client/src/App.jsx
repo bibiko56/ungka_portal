@@ -33,6 +33,8 @@ import UserLogin from './pages/UserLogin';
 import UserRegister from './pages/UserRegister';
 import AdminRegister from './pages/AdminRegister';
 import AdminDashboard from './pages/AdminDashboard';
+import ForgotPassword from './pages/ForgotPassword';
+
 
 // Component & Context Imports
 import ProtectedRoute from './components/ProtectedRoute';
@@ -86,6 +88,7 @@ function Layout() {
           <Route path="/login/user" element={<UserLogin />} />
           <Route path="/register/user" element={<UserRegister />} />
           <Route path="/register/admin" element={<AdminRegister />} />
+          <Route path="/forgot-password/:type" element={<ForgotPassword />} />
 
           {/* Protected Admin Routes */}
           <Route 
