@@ -1,10 +1,10 @@
 import React from 'react';
 import NewsBanner from '../components/NewsBanner';
-import LatestInformation from '../components/LatestInformation';
-import NewsCards from '../components/NewsCard';
-import CommunityEventsGrid from '../components/CommunityEventsGrid';
-import RecentSKEventSection from '../components/RecentSKEventSection';
-import RecentAccomplishmentsGrid from '../components/RecentAccomplishmentsGrid';
+import LatestNewsSection from '../components/LatestNewsSection';
+import RecentAccomplishments2 from '../components/RecentAccomplishments2';
+import JoinCommunityBanner from '../components/JoinCommunityBanner';
+import SkNews from '../components/SkNews';
+import AssistanceAndGridNews from '../components/AssistanceAndGridNews';
 
 export default function NewsUpdate() {
   return (
@@ -14,11 +14,11 @@ export default function NewsUpdate() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">
-        <LatestInformation />
-        <NewsCards />
-        <CommunityEventsGrid />
-        <RecentSKEventSection />
-        <RecentAccomplishmentsGrid />
+        <LatestNewsSection />
+        <RecentAccomplishments2 />
+        <JoinCommunityBanner />
+        <SkNews />
+        <AssistanceAndGridNews />
       </div>
     </div>
   );

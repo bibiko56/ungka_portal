@@ -27,7 +27,7 @@ export default function JoinCommunityBanner() {
               {/* Left Badge (Green Logo) */}
               <div className="absolute left-0 z-10 w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-full p-1.5 shadow-2xl flex items-center justify-center transform -translate-x-2">
                 <img
-                  src="/path-to-green-leaf-logo.png"
+                  src="/path-to-yellow-leaf-logo.png"
                   alt="Barangay Emblem Left"
                   className="w-full h-full object-contain rounded-full"
                 />
