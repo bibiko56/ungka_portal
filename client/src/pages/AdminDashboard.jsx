@@ -4,6 +4,7 @@ import ManageEvents from './ManageEvents';
 import CommunityReports from './CommunityReports';
 import AdminApprovals from './AdminApprovals';
 import ManageOfficials from './ManageOfficials';
+import ManageNews from './ManageNews';
 
 
 export default function AdminDashboard() {
@@ -305,6 +306,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'approvals' && <AdminApprovals />}
         {activeTab === 'officials' && <ManageOfficials />}
+        {activeTab === 'news' && <ManageNews />}
       </main>
 
       {/* CREATE / EDIT EVENT MODAL */}

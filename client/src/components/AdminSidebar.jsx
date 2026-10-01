@@ -52,6 +52,17 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
 >
   Manage Officials
 </button>
+
+<button
+  onClick={() => setActiveTab('news')}
+  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
+    activeTab === 'news'
+      ? 'bg-[#005C38] text-white'
+      : 'text-emerald-100/70 hover:bg-[#004A2D] hover:text-white'
+  }`}
+>
+  Manage News
+</button>
       </nav>
     </aside>
   );

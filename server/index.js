@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import incidentRoutes from './routes/incidentRoutes.js'; 
 import officialRoutes from './routes/officialRoutes.js';
+import newsRoutes from './routes/newsRoutes.js';
 import dns from 'node:dns';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/incidents', incidentRoutes); 
 app.use('/api/officials', officialRoutes);
+app.use('/api/news', newsRoutes);
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
