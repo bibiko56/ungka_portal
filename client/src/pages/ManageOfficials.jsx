@@ -24,7 +24,7 @@ export default function ManageOfficials() {
 
   const fetchOfficials = async () => {
     try {
-      const res = await fetch('${import.meta.env.VITE_API_URL}/api/officials');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/officials`);
       const data = await res.json();
       setOfficials(data);
     } catch (err) {
@@ -68,7 +68,7 @@ export default function ManageOfficials() {
 
     const url = editingId
       ? `${import.meta.env.VITE_API_URL}/api/officials/${editingId}`
-      : '${import.meta.env.VITE_API_URL}/api/officials';
+      : `${import.meta.env.VITE_API_URL}/api/officials`;
 
     try {
       const res = await fetch(url, {

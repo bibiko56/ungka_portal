@@ -17,7 +17,7 @@ export default function ManageNews() {
 
   const fetchNews = async () => {
     try {
-      const res = await fetch('${import.meta.env.VITE_API_URL}/api/news');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/news`);
       const data = await res.json();
       setNews(data);
     } catch (err) {
@@ -60,7 +60,7 @@ export default function ManageNews() {
 
     const url = editingId
       ? `${import.meta.env.VITE_API_URL}/api/news/${editingId}`
-      : '${import.meta.env.VITE_API_URL}/api/news';
+      : `${import.meta.env.VITE_API_URL}/api/news`;
 
     try {
       const res = await fetch(url, {

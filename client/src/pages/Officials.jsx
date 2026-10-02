@@ -71,7 +71,7 @@ export default function Officials() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    fetch('${import.meta.env.VITE_API_URL}/api/officials')
+    fetch(`${import.meta.env.VITE_API_URL}/api/officials`)
       .then((res) => res.json())
       .then((data) => setOfficials(data))
       .catch((err) => console.error(err))

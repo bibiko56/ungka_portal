@@ -44,7 +44,7 @@ export default function AdminRegister() {
     setLoading(true);
 
     try {
-      const response = await fetch('${import.meta.env.VITE_API_URL}/api/auth/admin/register', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/admin/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

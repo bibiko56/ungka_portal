@@ -18,7 +18,7 @@ export default function Volunteer() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
         if (res.ok) {
           const data = await res.json();
           setEvents(data);
@@ -70,7 +70,7 @@ const handleJoinEvent = async (eventId) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
         if (res.ok) {
           const data = await res.json();
           setEvents(data);
