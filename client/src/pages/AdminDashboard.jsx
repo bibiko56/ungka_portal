@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   const fetchIncidents = async () => {
     setLoadingIncidents(true);
     try {
-      const res = await fetch('http://localhost:5000/api/incidents');
+      const res = await fetch('${import.meta.env.VITE_API_URL}/api/incidents');
       const data = await res.json();
       setIncidentReports(data);
     } catch (err) {
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/incidents/${id}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/incidents/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
     setSelectedEventForVolunteers(evt);
     setLoadingVolunteers(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${evt._id}/volunteers`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${evt._id}/volunteers`);
       if (res.ok) {
         const data = await res.json();
         setVolunteersList(data);
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/events');
+      const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
       const data = await res.json();
       setEvents(data);
     } catch (err) {
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this event?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${id}`, {
         method: 'DELETE',
       });
 
@@ -186,11 +186,11 @@ export default function AdminDashboard() {
     }
 
     try {
-      let url = 'http://localhost:5000/api/events';
+      let url = '${import.meta.env.VITE_API_URL}/api/events';
       let method = 'POST';
 
       if (editingEventId) {
-        url = `http://localhost:5000/api/events/${editingEventId}`;
+        url = `${import.meta.env.VITE_API_URL}/api/events/${editingEventId}`;
         method = 'PUT';
       }
 
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                     {existingImages.map((img, idx) => (
                       <div key={idx} className="relative group w-16 h-16 border rounded-lg overflow-hidden bg-gray-50">
                         <img 
-                          src={`http://localhost:5000${img}`} 
+                          src={`${import.meta.env.VITE_API_URL}${img}`} 
                           alt="Event preview" 
                           className="w-full h-full object-cover" 
                         />
@@ -576,7 +576,7 @@ export default function AdminDashboard() {
                 <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Attached Photo Evidence</label>
                 <div className="rounded-2xl overflow-hidden border border-gray-200 bg-black/5 flex justify-center max-h-72">
                   <img
-                    src={`http://localhost:5000${selectedIncidentReport.image}`}
+                    src={`${import.meta.env.VITE_API_URL}${selectedIncidentReport.image}`}
                     alt="Incident Evidence"
                     className="object-contain max-h-72 w-full"
                   />

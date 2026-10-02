@@ -15,7 +15,7 @@ function OfficialCard({ official, large, onClick }) {
     >
       <div className={`${size} rounded-full border-4 border-emerald-700 bg-emerald-50 overflow-hidden shadow-md flex items-center justify-center font-bold text-emerald-800 group-hover:scale-105 transition-transform`}>
         {official.image ? (
-          <img src={`http://localhost:5000${official.image}`} alt={official.name} className="w-full h-full object-cover" />
+          <img src={`${import.meta.env.VITE_API_URL}${official.image}`} alt={official.name} className="w-full h-full object-cover" />
         ) : (
           official.position?.slice(0, 3).toUpperCase()
         )}
@@ -44,7 +44,7 @@ function OfficialModal({ official, onClose }) {
         </button>
         <div className="w-28 h-28 rounded-full border-4 border-emerald-700 bg-emerald-50 overflow-hidden shadow-md mx-auto -mt-24">
           {official.image ? (
-            <img src={`http://localhost:5000${official.image}`} alt={official.name} className="w-full h-full object-cover" />
+            <img src={`${import.meta.env.VITE_API_URL}${official.image}`} alt={official.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center font-bold text-emerald-800">
               {official.position?.slice(0, 3).toUpperCase()}
@@ -71,7 +71,7 @@ export default function Officials() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/officials')
+    fetch('${import.meta.env.VITE_API_URL}/api/officials')
       .then((res) => res.json())
       .then((data) => setOfficials(data))
       .catch((err) => console.error(err))

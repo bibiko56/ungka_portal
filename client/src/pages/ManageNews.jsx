@@ -17,7 +17,7 @@ export default function ManageNews() {
 
   const fetchNews = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/news');
+      const res = await fetch('${import.meta.env.VITE_API_URL}/api/news');
       const data = await res.json();
       setNews(data);
     } catch (err) {
@@ -59,8 +59,8 @@ export default function ManageNews() {
     if (existingImage) fd.append('existingImage', existingImage);
 
     const url = editingId
-      ? `http://localhost:5000/api/news/${editingId}`
-      : 'http://localhost:5000/api/news';
+      ? `${import.meta.env.VITE_API_URL}/api/news/${editingId}`
+      : '${import.meta.env.VITE_API_URL}/api/news';
 
     try {
       const res = await fetch(url, {
@@ -80,7 +80,7 @@ export default function ManageNews() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this news article? This cannot be undone.')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/news/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/news/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -119,7 +119,7 @@ export default function ManageNews() {
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-emerald-50 border border-gray-200 flex-shrink-0">
                     {n.image && (
-                      <img src={`http://localhost:5000${n.image}`} alt={n.title} className="w-full h-full object-cover" />
+                      <img src={`${import.meta.env.VITE_API_URL}${n.image}`} alt={n.title} className="w-full h-full object-cover" />
                     )}
                   </div>
                   <div>
@@ -202,7 +202,7 @@ export default function ManageNews() {
                   className="w-full text-xs mt-1"
                 />
                 {existingImage && !imageFile && (
-                  <img src={`http://localhost:5000${existingImage}`} alt="current" className="w-20 h-20 rounded-xl object-cover mt-2" />
+                  <img src={`${import.meta.env.VITE_API_URL}${existingImage}`} alt="current" className="w-20 h-20 rounded-xl object-cover mt-2" />
                 )}
               </div>
               <div className="flex justify-end gap-2 pt-2">

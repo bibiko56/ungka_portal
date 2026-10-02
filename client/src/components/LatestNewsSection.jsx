@@ -9,7 +9,7 @@ export default function LatestNewsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/news')
+    fetch('${import.meta.env.VITE_API_URL}/api/news')
       .then((res) => res.json())
       .then((data) => setNews(data))
       .catch((err) => console.error(err))
@@ -54,7 +54,7 @@ export default function LatestNewsSection() {
           <div className="relative w-full h-[320px] sm:h-[420px] rounded-2xl overflow-hidden bg-emerald-950 shadow-inner flex items-center justify-center">
             {mainNews.image ? (
               <img
-                src={`http://localhost:5000${mainNews.image}`}
+                src={`${import.meta.env.VITE_API_URL}${mainNews.image}`}
                 alt={mainNews.title}
                 className="w-full h-full object-cover"
               />
@@ -132,7 +132,7 @@ export default function LatestNewsSection() {
                   <div className="w-20 h-20 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0 relative">
                     {item.image ? (
                       <img
-                        src={`http://localhost:5000${item.image}`}
+                        src={`${import.meta.env.VITE_API_URL}${item.image}`}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

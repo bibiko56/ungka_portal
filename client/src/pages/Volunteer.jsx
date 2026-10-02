@@ -18,7 +18,7 @@ export default function Volunteer() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/events');
+        const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
         if (res.ok) {
           const data = await res.json();
           setEvents(data);
@@ -44,7 +44,7 @@ const handleJoinEvent = async (eventId) => {
     const userName = user.name || user.username || user.fullName || user.email.split('@')[0];
 
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${eventId}/join`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${eventId}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -70,7 +70,7 @@ const handleJoinEvent = async (eventId) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/events');
+        const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
         if (res.ok) {
           const data = await res.json();
           setEvents(data);
@@ -256,7 +256,7 @@ const handleJoinEvent = async (eventId) => {
                     {evt.images && evt.images.map((img, idx) => (
                       <img 
                         key={idx} 
-                        src={`http://localhost:5000${img}`} 
+                        src={`${import.meta.env.VITE_API_URL}${img}`} 
                         alt={evt.title} 
                         className="w-full h-40 object-cover rounded-2xl"
                       />
@@ -331,7 +331,7 @@ const handleJoinEvent = async (eventId) => {
                 {selectedModalEvent.images && selectedModalEvent.images.map((img, idx) => (
                   <img 
                     key={idx} 
-                    src={`http://localhost:5000${img}`} 
+                    src={`${import.meta.env.VITE_API_URL}${img}`} 
                     alt={selectedModalEvent.title} 
                     className="w-full h-36 object-cover rounded-2xl border"
                   />

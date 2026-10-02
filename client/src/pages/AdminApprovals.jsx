@@ -10,7 +10,7 @@ export default function AdminApprovals() {
 
   const fetchPending = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/pending', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/pending`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -27,7 +27,7 @@ export default function AdminApprovals() {
 
   const handleApprove = async (type, id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/approve/${type}/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/approve/${type}/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -42,7 +42,7 @@ export default function AdminApprovals() {
   const handleDecline = async (type, id) => {
     if (!window.confirm('Decline this registration? This cannot be undone.')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/decline/${type}/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/decline/${type}/${id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });

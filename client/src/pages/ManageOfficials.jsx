@@ -24,7 +24,7 @@ export default function ManageOfficials() {
 
   const fetchOfficials = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/officials');
+      const res = await fetch('${import.meta.env.VITE_API_URL}/api/officials');
       const data = await res.json();
       setOfficials(data);
     } catch (err) {
@@ -67,8 +67,8 @@ export default function ManageOfficials() {
     if (existingImage) fd.append('existingImage', existingImage);
 
     const url = editingId
-      ? `http://localhost:5000/api/officials/${editingId}`
-      : 'http://localhost:5000/api/officials';
+      ? `${import.meta.env.VITE_API_URL}/api/officials/${editingId}`
+      : '${import.meta.env.VITE_API_URL}/api/officials';
 
     try {
       const res = await fetch(url, {
@@ -88,7 +88,7 @@ export default function ManageOfficials() {
   const handleDelete = async (id) => {
     if (!window.confirm('Remove this official? This cannot be undone.')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/officials/${id}`, {
+      const res = await fetch(` ${import.meta.env.VITE_API_URL}/api/officials/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -143,7 +143,7 @@ export default function ManageOfficials() {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-emerald-50 border-2 border-emerald-700 flex-shrink-0">
                     {o.image && (
-                      <img src={`http://localhost:5000${o.image}`} alt={o.name} className="w-full h-full object-cover" />
+                      <img src={`${import.meta.env.VITE_API_URL}${o.image}`} alt={o.name} className="w-full h-full object-cover" />
                     )}
                   </div>
                   <div>
@@ -230,7 +230,7 @@ export default function ManageOfficials() {
                   className="w-full text-xs mt-1"
                 />
                 {existingImage && !imageFile && (
-                  <img src={`http://localhost:5000${existingImage}`} alt="current" className="w-16 h-16 rounded-full object-cover mt-2" />
+                  <img src={`${import.meta.env.VITE_API_URL}${existingImage}`} alt="current" className="w-16 h-16 rounded-full object-cover mt-2" />
                 )}
               </div>
               <div className="flex justify-end gap-2 pt-2">
