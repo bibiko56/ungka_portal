@@ -9,7 +9,7 @@ export default function LatestNewsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('${import.meta.env.VITE_API_URL}/api/news')
+    fetch(`${import.meta.env.VITE_API_URL}/api/news`)
       .then((res) => res.json())
       .then((data) => setNews(data))
       .catch((err) => console.error(err))
