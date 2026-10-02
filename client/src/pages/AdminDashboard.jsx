@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   const fetchIncidents = async () => {
     setLoadingIncidents(true);
     try {
-      const res = await fetch('${import.meta.env.VITE_API_URL}/api/incidents');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/incidents`);
       const data = await res.json();
       setIncidentReports(data);
     } catch (err) {
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch('${import.meta.env.VITE_API_URL}/api/events');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
       const data = await res.json();
       setEvents(data);
     } catch (err) {
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      let url = '${import.meta.env.VITE_API_URL}/api/events';
+      let url = `${import.meta.env.VITE_API_URL}/api/events`;
       let method = 'POST';
 
       if (editingEventId) {
