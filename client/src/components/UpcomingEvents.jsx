@@ -17,13 +17,13 @@ const upcomingEvents = [
     id: 3,
     title: 'Medical Mission 2026',
     date: 'December 12, 2026',
-    image: '/path-to-medical-icon.png',
+    image: '/favicon.svg',
   },
   {
     id: 4,
     title: 'Youth Sports Fest',
     date: 'December 20, 2026',
-    image: '/path-to-sports-icon.png',
+    image: '/favicon.svg',
   },
 ];
 
