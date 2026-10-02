@@ -1,11 +1,10 @@
+import 'dotenv/config';   // ← add this as the very first import
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
-import incidentRoutes from './routes/incidentRoutes.js'; 
-import officialRoutes from './routes/officialRoutes.js';
-import newsRoutes from './routes/newsRoutes.js';
+import incidentRoutes from './routes/incidentRoutes.js';
 import dns from 'node:dns';
 
 const app = express();
@@ -17,16 +16,12 @@ app.use('/uploads', express.static('uploads'));
 dns.setDefaultResultOrder('ipv4first');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
-// Mount API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/incidents', incidentRoutes); 
-app.use('/api/officials', officialRoutes);
-app.use('/api/news', newsRoutes);
+app.use('/api/incidents', incidentRoutes);
 
-// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
-mongoose.connect('mongodb+srv://emnmsqda0502_db_user:chL2WzEsqzDPNPW8@cluster0.tzosxj1.mongodb.net/?appName=Cluster0')
+mongoose.connect(process.env.MONGO_URI)   // ← was the hardcoded string
   .then(() => {
     console.log(`Server running on port ${PORT}`);
     app.listen(PORT);

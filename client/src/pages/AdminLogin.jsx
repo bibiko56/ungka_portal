@@ -62,7 +62,7 @@ export default function AdminLogin() {
           
           {/* Back Button */}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             type="button"
             className="absolute left-6 top-6 p-2 text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 rounded-full transition-all"
             title="Return to Home"

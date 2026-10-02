@@ -44,12 +44,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-800 text-white flex items-center justify-center font-bold text-sm">
-            U
-          </div>
-          <span className="font-bold text-lg text-emerald-950">UServe</span>
-        </Link>
+        {/* Brand Logo */}
+<Link to="/" className="flex items-center gap-2">
+  <img src="/logo.svg" alt="UServe logo" className="h-8 w-auto" />
+  <span className="font-bold text-lg text-emerald-950">UServe</span>
+</Link>
 
         {/* Navigation Links */}
         {/* Navigation Links */}
