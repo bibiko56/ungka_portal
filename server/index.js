@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import incidentRoutes from './routes/incidentRoutes.js';
+import newsRoutes from './routes/newsRoutes.js';
 import dns from 'node:dns';
 
 const app = express();
@@ -19,6 +20,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/incidents', incidentRoutes);
+app.use('/api/news', newsRoutes);
 
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)   // ← was the hardcoded string
