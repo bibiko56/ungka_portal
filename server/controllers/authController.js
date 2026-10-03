@@ -307,10 +307,6 @@ export const forgotPassword = async (req, res) => {
       await sendEmail(account.email, 'Ungka Portal password reset', `Your reset code is ${code}. It expires in 10 minutes.`);
     }
 
-    // TESTING ONLY: shows the code on screen. Remove before launch.
-    if (process.env.NODE_ENV !== 'production') {
-      response.devCode = code;
-    }
 
     res.status(200).json(response);
   } catch (error) {
