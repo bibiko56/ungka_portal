@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import Features from './components/Features';
 import Population from './components/Population';
 import LatestInformation from './components/LatestInformation';
+import LatestNewsSection from './components/LatestNewsSection';
 import UpcomingEvents from './components/UpcomingEvents';
 import UpcomingEvents2 from './components/UpcomingEvents2';
 import JoinCommunityBanner from './components/JoinCommunityBanner';
@@ -46,7 +47,7 @@ function Home() {
       <Hero />
       <Features />
       <Population />
-      <LatestInformation />
+      <LatestNewsSection />
       <UpcomingEvents />
       <UpcomingEvents2 />
       <JoinCommunityBanner />
