@@ -1,12 +1,22 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const sendEmail = async (to, subject, body) => {
-  return resend.emails.send({
-    from: 'Ungka Portal <onboarding@resend.dev>', // Resend's shared test sender — works immediately, no domain setup needed
-    to,
-    subject,
-    text: body,
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { email: process.env.BREVO_SENDER_EMAIL, name: 'Ungka Portal' },
+      to: [{ email: to }],
+      subject,
+      textContent: body,
+    }),
   });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Brevo error: ${errText}`);
+  }
+
+  return res.json();
 };
