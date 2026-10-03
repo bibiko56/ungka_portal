@@ -1,18 +1,10 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // STARTTLS, not implicit TLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async (to, subject, body) => {
-  return transporter.sendMail({
-    from: `"Ungka Portal" <${process.env.EMAIL_USER}>`,
+  return resend.emails.send({
+    from: 'Ungka Portal <onboarding@resend.dev>', // Resend's shared test sender — works immediately, no domain setup needed
     to,
     subject,
     text: body,
