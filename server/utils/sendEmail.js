@@ -1,5 +1,18 @@
+import nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD,
+  },
+});
+
 export const sendEmail = async (to, subject, body) => {
-  // TODO: swap for a real provider (Nodemailer, SendGrid, etc.) before launch
-  console.log(`[MOCK EMAIL] To: ${to} | Subject: ${subject} | Body: ${body}`);
-  return { status: 'mock-sent', to, subject };
+  return transporter.sendMail({
+    from: `"Ungka Portal" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    text: body,
+  });
 };
