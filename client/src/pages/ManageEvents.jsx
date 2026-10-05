@@ -49,8 +49,15 @@ export default function ManageEvents({ events, loading, handleOpenCreateModal, h
                 <div className="space-y-1 flex-1">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-xs tracking-wider text-gray-900 uppercase">{evt.title}</h3>
+                    <div className="flex items-center gap-2">
+                    {evt.category && (
+                        <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                    {evt.category}
+                        </span>
+                    )}
                     <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full">PUBLISHED</span>
                   </div>
+                </div>
 
                   {evt.tagline && <p className="text-xs font-semibold text-emerald-800 uppercase mb-1">{evt.tagline}</p>}
 

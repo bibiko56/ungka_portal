@@ -5,6 +5,9 @@ import CommunityReports from './CommunityReports';
 import AdminApprovals from './AdminApprovals';
 import ManageOfficials from './ManageOfficials';
 import ManageNews from './ManageNews';
+import { useModal } from '../context/ModalContext';
+
+import { Menu } from 'lucide-react';
 
 
 export default function AdminDashboard() {
@@ -12,6 +15,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('manage'); // 'manage', 'incidents', or 'approvals'
+  const { alert, confirm } = useModal();
 
   // Form State
   const [title, setTitle] = useState('');
@@ -20,10 +24,12 @@ export default function AdminDashboard() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
-  const [images, setImages] = useState([]); 
-  const [existingImages, setExistingImages] = useState([]); 
+  const [category, setCategory] = useState('Barangay Programs');
+  const [images, setImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Volunteers Modal State & Handler
   const [selectedEventForVolunteers, setSelectedEventForVolunteers] = useState(null);
@@ -32,7 +38,7 @@ export default function AdminDashboard() {
 
   const [incidentReports, setIncidentReports] = useState([]);
   const [loadingIncidents, setLoadingIncidents] = useState(false);
-  
+
   // Incident Report Detail Modal State
   const [selectedIncidentReport, setSelectedIncidentReport] = useState(null);
 
@@ -116,6 +122,7 @@ export default function AdminDashboard() {
     setDate('');
     setTime('');
     setLocation('');
+    setCategory('Barangay Programs');
     setImages([]);
     setExistingImages([]);
     setMessage(null);
@@ -127,7 +134,7 @@ export default function AdminDashboard() {
     setTitle(evt.title || '');
     setTagline(evt.tagline || '');
     setDescription(evt.description || '');
-    
+
     let formattedDate = '';
     if (evt.date) {
       const parsedDate = new Date(evt.date);
@@ -139,6 +146,7 @@ export default function AdminDashboard() {
 
     setTime(evt.time || '');
     setLocation(evt.location || '');
+    setCategory(evt.category || 'Barangay Programs');
     setImages([]);
     setExistingImages(evt.images || []);
     setMessage(null);
@@ -146,7 +154,8 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteEvent = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this event?')) return;
+    const confirmed = await confirm('Are you sure you want to delete this event?');
+    if (!confirmed) return;
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events/${id}`, {
@@ -156,11 +165,11 @@ export default function AdminDashboard() {
       if (res.ok) {
         setEvents(events.filter((evt) => evt._id !== id));
       } else {
-        alert('Failed to delete event.');
+        await alert('Failed to delete event.', 'danger');
       }
     } catch (err) {
       console.error('Error deleting event:', err);
-      alert('Server error while deleting event.');
+      await alert('Server error while deleting event.', 'danger');
     }
   };
 
@@ -176,6 +185,7 @@ export default function AdminDashboard() {
     formData.append('date', date);
     formData.append('time', time);
     formData.append('location', location);
+    formData.append('category', category);
 
     existingImages.forEach((img) => {
       formData.append('existingImages', img);
@@ -208,6 +218,7 @@ export default function AdminDashboard() {
       setDate('');
       setTime('');
       setLocation('');
+      setCategory('Barangay Programs');
       setImages([]);
       setExistingImages([]);
       setEditingEventId(null);
@@ -267,9 +278,24 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F3F4F6] flex">
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AdminSidebar
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+  isOpen={mobileSidebarOpen}
+  onClose={() => setMobileSidebarOpen(false)}
+/>
 
       <main className="flex-1 p-8 space-y-6">
+        <div className="md:hidden flex items-center gap-3 -mt-1 -mx-1">
+    <button
+      onClick={() => setMobileSidebarOpen(true)}
+      className="p-2 rounded-lg bg-[#013220] text-white"
+      aria-label="Open menu"
+    >
+      <Menu className="w-5 h-5" />
+    </button>
+    <span className="text-sm font-bold text-gray-800">Admin Dashboard</span>
+  </div>
         {activeTab === 'manage' && (
           <ManageEvents
             events={events}
@@ -311,12 +337,12 @@ export default function AdminDashboard() {
 
       {/* CREATE / EDIT EVENT MODAL */}
       {isModalOpen && (
-        <div 
+        <div
           onClick={() => setIsModalOpen(false)}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         >
-          <div 
-            onClick={(e) => e.stopPropagation()} 
+          <div
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center border-b pb-3">
@@ -359,6 +385,21 @@ export default function AdminDashboard() {
                   placeholder="e.g. Opening Ceremony & First Game"
                   className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-emerald-800"
                 />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-gray-700 block mb-1">Category</label>
+                <select
+                  required
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-emerald-800"
+                >
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Aid & Assistance">Aid & Assistance</option>
+                  <option value="Barangay Programs">Barangay Programs</option>
+                  <option value="SK Event">SK Event</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -413,10 +454,10 @@ export default function AdminDashboard() {
                   <div className="flex flex-wrap gap-2 mb-2">
                     {existingImages.map((img, idx) => (
                       <div key={idx} className="relative group w-16 h-16 border rounded-lg overflow-hidden bg-gray-50">
-                        <img 
-                          src={`${import.meta.env.VITE_API_URL}${img}`} 
-                          alt="Event preview" 
-                          className="w-full h-full object-cover" 
+                        <img
+                          src={`${import.meta.env.VITE_API_URL}${img}`}
+                          alt="Event preview"
+                          className="w-full h-full object-cover"
                         />
                         <button
                           type="button"
@@ -468,11 +509,11 @@ export default function AdminDashboard() {
 
       {/* VIEW VOLUNTEERS MODAL */}
       {selectedEventForVolunteers && (
-        <div 
+        <div
           onClick={() => setSelectedEventForVolunteers(null)}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl max-w-xl w-full p-6 space-y-6 shadow-xl max-h-[90vh] overflow-y-auto"
           >
@@ -481,7 +522,7 @@ export default function AdminDashboard() {
                 <h3 className="text-base font-bold text-gray-900 uppercase">Event Participants</h3>
                 <p className="text-xs text-emerald-800 font-semibold">{selectedEventForVolunteers.title}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedEventForVolunteers(null)}
                 className="text-gray-400 hover:text-gray-600 font-bold text-lg"
               >
@@ -522,7 +563,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="flex justify-end pt-3 border-t">
-              <button 
+              <button
                 onClick={() => setSelectedEventForVolunteers(null)}
                 className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl transition-colors"
               >
@@ -535,11 +576,11 @@ export default function AdminDashboard() {
 
       {/* INCIDENT REPORT DETAILS MODAL */}
       {selectedIncidentReport && (
-        <div 
+        <div
           onClick={() => setSelectedIncidentReport(null)}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto relative"
           >

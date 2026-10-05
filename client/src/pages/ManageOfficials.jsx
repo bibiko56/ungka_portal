@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useModal } from '../context/ModalContext';
 
 const CATEGORIES = [
   { key: 'barangay', label: 'Barangay Officials' },
@@ -19,6 +20,7 @@ export default function ManageOfficials() {
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
   const [existingImage, setExistingImage] = useState('');
+  const { alert, confirm } = useModal();
 
   const token = localStorage.getItem('token');
 
@@ -81,14 +83,15 @@ export default function ManageOfficials() {
       setShowModal(false);
       fetchOfficials();
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Remove this official? This cannot be undone.')) return;
+    const confirmed = await confirm('Remove this official? This cannot be undone.');
+    if (!confirmed) return;
     try {
-      const res = await fetch(` ${import.meta.env.VITE_API_URL}/api/officials/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/officials/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -96,7 +99,7 @@ export default function ManageOfficials() {
       if (!res.ok) throw new Error(data.message);
       setOfficials((prev) => prev.filter((o) => o._id !== id));
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
 

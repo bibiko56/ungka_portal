@@ -35,11 +35,13 @@ import UserRegister from './pages/UserRegister';
 import AdminRegister from './pages/AdminRegister';
 import AdminDashboard from './pages/AdminDashboard';
 import ForgotPassword from './pages/ForgotPassword';
+import NewsArticle from './pages/NewsArticle';
 
 
 // Component & Context Imports
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { ModalProvider } from './context/ModalContext';
 
 function Home() {
   return (
@@ -48,12 +50,10 @@ function Home() {
       <Features />
       <Population />
       <LatestNewsSection />
-      <UpcomingEvents />
       <UpcomingEvents2 />
       <JoinCommunityBanner />
       <RecentAccomplishments />
       <RecentSKEvent />
-      <SKUpcomingEvents />
       <SKRecentAccomplishments />
       <HealthCenterServices />
       <BarangayHallServices />
@@ -78,6 +78,7 @@ function Layout() {
           <Route path="/services" element={<Services />} />
           <Route path="/health-center" element={<HealthCenterServices />} />
           <Route path="/news" element={<NewsUpdate />} />
+          <Route path="/news/:id" element={<NewsArticle />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/report-issue" element={<IncidentReportForm />} />
@@ -90,6 +91,7 @@ function Layout() {
           <Route path="/register/user" element={<UserRegister />} />
           <Route path="/register/admin" element={<AdminRegister />} />
           <Route path="/forgot-password/:type" element={<ForgotPassword />} />
+          
 
           {/* Protected Admin Routes */}
           <Route 
@@ -110,7 +112,9 @@ function Layout() {
 export default function App() {
   return (
     <AuthProvider>
-      <Layout />
+      <ModalProvider>
+        <Layout />
+      </ModalProvider>
     </AuthProvider>
   );
 }

@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useModal } from '../context/ModalContext';
 
-const emptyForm = { title: '', description: '', tag: '', location: '', date: '' };
+const emptyForm = { title: '', description: '', tag: '', location: '', date: '', section: 'latest' };
 
 const toInputDate = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
+
+const SECTIONS = [
+  { key: 'latest', label: 'Latest News' },
+  { key: 'accomplishments', label: 'Recent Accomplishments' },
+  { key: 'sk', label: 'SK News' },
+  { key: 'assistance', label: 'Assistance & Programs' },
+];
 
 export default function ManageNews() {
   const [news, setNews] = useState([]);
@@ -12,6 +20,8 @@ export default function ManageNews() {
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
   const [existingImage, setExistingImage] = useState('');
+  const [filter, setFilter] = useState('all');
+  const { alert, confirm } = useModal();
 
   const token = localStorage.getItem('token');
 
@@ -31,7 +41,7 @@ export default function ManageNews() {
 
   const openCreateModal = () => {
     setEditingId(null);
-    setForm({ ...emptyForm, date: toInputDate(new Date()) });
+    setForm({ ...emptyForm, date: toInputDate(new Date()), section: filter !== 'all' ? filter : 'latest' });
     setImageFile(null);
     setExistingImage('');
     setShowModal(true);
@@ -45,6 +55,7 @@ export default function ManageNews() {
       tag: article.tag || '',
       location: article.location || '',
       date: toInputDate(article.date),
+      section: article.section || 'latest',
     });
     setImageFile(null);
     setExistingImage(article.image || '');
@@ -73,12 +84,13 @@ export default function ManageNews() {
       setShowModal(false);
       fetchNews();
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this news article? This cannot be undone.')) return;
+    const confirmed = await confirm('Delete this news article? This cannot be undone.');
+    if (!confirmed) return;
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/news/${id}`, {
         method: 'DELETE',
@@ -88,9 +100,12 @@ export default function ManageNews() {
       if (!res.ok) throw new Error(data.message);
       setNews((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
+
+  const filteredNews = filter === 'all' ? news : news.filter((n) => n.section === filter);
+  const sectionLabel = (key) => SECTIONS.find((s) => s.key === key)?.label || key;
 
   return (
     <div className="space-y-6">
@@ -107,14 +122,39 @@ export default function ManageNews() {
         </button>
       </div>
 
+      {/* Section filter tabs */}
+      <div className="inline-flex bg-gray-100 p-1.5 rounded-2xl border border-gray-200 gap-1 flex-wrap">
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+            filter === 'all' ? 'bg-emerald-800 text-white' : 'text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          All
+        </button>
+        {SECTIONS.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setFilter(s.key)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              filter === s.key ? 'bg-emerald-800 text-white' : 'text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 min-h-[350px]">
         {loading ? (
           <p className="text-xs text-gray-400">Loading news...</p>
-        ) : news.length === 0 ? (
-          <p className="text-xs text-gray-400 italic">No news articles yet.</p>
+        ) : filteredNews.length === 0 ? (
+          <p className="text-xs text-gray-400 italic">
+            No articles {filter === 'all' ? 'yet' : `in ${sectionLabel(filter)} yet`}.
+          </p>
         ) : (
           <div className="space-y-3">
-            {news.map((n, i) => (
+            {filteredNews.map((n, i) => (
               <div key={n._id} className="flex items-center justify-between border-b border-gray-100 py-3">
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-emerald-50 border border-gray-200 flex-shrink-0">
@@ -124,11 +164,16 @@ export default function ManageNews() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-900">
-                      {n.title} {i === 0 && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-1">FEATURED</span>}
+                      {n.title}{' '}
+                      {filter !== 'all' && i === 0 && (
+                        <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-1">FEATURED</span>
+                      )}
                     </p>
                     <p className="text-xs text-gray-500">
                       {new Date(n.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       {n.tag && ` · ${n.tag}`}
+                      {' · '}
+                      <span className="font-semibold text-emerald-700">{sectionLabel(n.section)}</span>
                     </p>
                   </div>
                 </div>
@@ -173,6 +218,22 @@ export default function ManageNews() {
                 rows={4}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
               />
+
+              <div>
+                <label className="text-xs font-medium text-gray-600">Section</label>
+                <select
+                  value={form.section}
+                  onChange={(e) => setForm({ ...form, section: e.target.value })}
+                  required
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"
+                >
+                  {SECTIONS.map((s) => (
+                    <option key={s.key} value={s.key}>{s.label}</option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-gray-400 mt-1">Decides which part of the News page this shows up in.</p>
+              </div>
+
               <input
                 type="text" placeholder="Tag (e.g. SANGGUNIANG KABATAAN (SK))"
                 value={form.tag}

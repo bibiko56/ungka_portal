@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Tag, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const formatDate = (d) =>
@@ -7,6 +8,7 @@ const formatDate = (d) =>
 export default function LatestNewsSection() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/news`)
@@ -16,6 +18,10 @@ export default function LatestNewsSection() {
       .finally(() => setLoading(false));
   }, []);
 
+  const latestNews = news.filter((n) => n.section === 'latest');
+  const mainNews = latestNews[0];
+  const relatedNews = latestNews.slice(1, 4);
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
@@ -24,16 +30,13 @@ export default function LatestNewsSection() {
     );
   }
 
-  if (news.length === 0) {
+  if (!mainNews) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
         <p className="text-xs text-gray-400 italic">No news articles yet. Check back soon.</p>
       </div>
     );
   }
-
-  const mainNews = news[0];
-  const relatedNews = news.slice(1, 4); // next 3 articles
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
@@ -49,7 +52,10 @@ export default function LatestNewsSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
         {/* LEFT & CENTER: Main Featured News Card */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div
+          onClick={() => navigate(`/news/${mainNews._id}`)}
+          className="lg:col-span-2 bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 cursor-pointer hover:shadow-md transition-shadow"
+        >
 
           <div className="relative w-full h-[320px] sm:h-[420px] rounded-2xl overflow-hidden bg-emerald-950 shadow-inner flex items-center justify-center">
             {mainNews.image ? (
@@ -95,10 +101,11 @@ export default function LatestNewsSection() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-100">
-            <button className="bg-emerald-950 hover:bg-emerald-900 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition-colors">
-              View Details
-            </button>
-            <button className="w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center shadow-sm transition-colors">
+            <span className="text-emerald-950 text-xs font-bold">Read full article →</span>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center shadow-sm transition-colors"
+            >
               <Share2 className="w-4 h-4" />
             </button>
           </div>
@@ -127,6 +134,7 @@ export default function LatestNewsSection() {
               {relatedNews.map((item) => (
                 <div
                   key={item._id}
+                  onClick={() => navigate(`/news/${item._id}`)}
                   className="bg-white border border-gray-200/70 rounded-2xl p-3.5 shadow-sm hover:shadow-md transition-all flex items-start gap-3.5 cursor-pointer group"
                 >
                   <div className="w-20 h-20 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0 relative">

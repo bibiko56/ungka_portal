@@ -1,124 +1,118 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, ArrowRight } from 'lucide-react';
 
-const skAccomplishments = [
-  {
-    id: 1,
-    title: 'Altiora Develops and Turns Over MoneySmart Youth AI Coach',
-    description: 'Altiora Digital Services successfully conducted a Financial Literacy Workshop for the youth of Barangay Ungka II, Pavia, Iloilo.',
-    date: 'November 21, 2025',
-    image: '/path-to-altiora-image.png',
-  },
-  {
-    id: 2,
-    title: 'Blood Donation Marathon',
-    description: 'Lubos ang pasalamat sang Sangguniang Kabataan (SK) Officials sang Brgy. Ungka II, Pavia, Iloilo sa madinalag-on nga paghiwat sang RMN kag iFM Iloilo Blood Donation Marathon sa GT Town Center subong nga adlaw.',
-    date: 'November 24, 2025',
-    image: '/path-to-blood-marathon-image.png',
-  },
-  {
-    id: 3,
-    title: 'SK Ungka II Conducts "Bahay Kalinga" Outreach Program',
-    description: 'This activity encourages residents to donate blood to help save lives while raising awareness about the importance of staying away from illegal drugs.',
-    date: 'December 10, 2025',
-    image: '/path-to-bahay-kalinga-image.png',
-  },
-  {
-    id: 4,
-    title: 'Basketball Summer Hinampang',
-    description: 'The league provides a positive and competitive environment where participants can showcase their talents while strengthening camaraderie and community spirit.',
-    date: 'December 15, 2025',
-    image: '/path-to-basketball-league-image.png',
-  },
-  {
-    id: 5,
-    title: 'Ungka II Blood donation Drive for Drug Prevention',
-    description: 'This activity encourages residents to donate blood to help save lives while raising awareness about the importance of staying away from illegal drugs.',
-    date: 'November 21, 2025',
-    image: '/path-to-blood-donation-image.png',
-  },
-  {
-    id: 6,
-    title: 'Tree-Planting and Clean-up Drive',
-    description: 'Volunteers work together to collect waste, clear public areas, and maintain a healthy and safe environment.',
-    date: 'November 24, 2025',
-    image: '/path-to-cleanup-drive-image.png',
-  },
-];
+const formatDate = (d) =>
+  new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-export default function SKRecentAccomplishments() {
-  const [visibleCount, setVisibleCount] = useState(6);
+export default function SkNews() {
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const handleViewMore = () => {
-    setVisibleCount((prev) => prev + 4);
-  };
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/news`)
+      .then((res) => res.json())
+      .then((data) => setNews(data))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const skNews = news.filter((n) => n.section === 'sk');
+  const mainNews = skNews[0];
+  const sidebarNews = skNews.slice(1, 4);
+  const imgSrc = (img) => (img ? `${import.meta.env.VITE_API_URL}${img}` : '');
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
+        <p className="text-xs text-gray-400">Loading SK news...</p>
+      </div>
+    );
+  }
+
+  if (!mainNews) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
+        <p className="text-xs text-gray-400 italic">No SK news posted yet.</p>
+      </div>
+    );
+  }
 
   return (
-    <section className="bg-white py-16 px-4 sm:px-8">
-      <div className="max-w-7xl mx-auto space-y-10">
-        
-        {/* SK HEADER WITH VIEW MORE ON THE RIGHT SIDE */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 pb-6">
-          <div className="space-y-2 text-center sm:text-left">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3e2b]">
-              SK Recent Accomplishments
-            </h2>
-            <div className="w-32 h-1 bg-[#1e3e2b] rounded-full mx-auto sm:mx-0"></div>
-            <p className="text-[#1e3e2b] font-bold text-xs sm:text-sm pt-1">
-              By: Ungka2 Katipunan Ng Kabataan
-            </p>
-          </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans space-y-10">
 
-          {/* Right Side "View More" Button */}
-          <button
-            onClick={handleViewMore}
-            className="bg-[#1e3e2b] hover:bg-[#152e20] text-white font-bold px-6 py-2.5 rounded-full transition shadow-md text-sm border border-emerald-700/30 flex items-center gap-2"
-          >
-            <span>View More</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        {/* 2x3 GRID OF CARDS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {skAccomplishments.slice(0, visibleCount).map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-col sm:flex-row items-center gap-5 p-2 bg-white rounded-2xl transition hover:shadow-md border border-transparent hover:border-gray-100"
-            >
-              {/* Thumbnail Image */}
-              <div className="w-full sm:w-52 h-44 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 shadow-sm">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-
-              {/* Card Text Content */}
-              <div className="flex-1 space-y-2 flex flex-col justify-between h-full py-1">
-                <div>
-                  <h4 className="text-base font-bold text-[#1e3e2b] leading-snug">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-gray-500 leading-relaxed pt-1 line-clamp-3">
-                    {item.description}
-                  </p>
-                </div>
-
-                {/* Footer Date */}
-                <div className="pt-2 border-t border-gray-100">
-                  <span className="text-xs font-semibold text-[#1e3e2b]/80">
-                    {item.date}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
+      <div>
+        <span className="inline-block bg-emerald-800 text-white text-xs sm:text-sm font-bold uppercase tracking-wider px-5 py-2 rounded-lg shadow-sm">
+          SK-News
+        </span>
       </div>
-    </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <div
+          onClick={() => navigate(`/news/${mainNews._id}`)}
+          className="lg:col-span-6 bg-purple-950/90 border border-purple-900 rounded-3xl overflow-hidden shadow-md flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+        >
+          <div className="relative w-full h-[340px] sm:h-[400px] bg-purple-900 overflow-hidden flex items-center justify-center">
+            {mainNews.image ? (
+              <img src={imgSrc(mainNews.image)} alt={mainNews.title} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-xs text-gray-300">No image</span>
+            )}
+          </div>
+          <div className="p-6 sm:p-8 text-white space-y-4 flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight leading-snug">
+                {mainNews.title}
+              </h2>
+              <div className="flex items-center gap-2 text-xs font-medium text-emerald-300">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>{formatDate(mainNews.date)}</span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-200/90 leading-relaxed font-light">
+                {mainNews.description}
+              </p>
+            </div>
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-sm transition-colors"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-6 space-y-4">
+          {sidebarNews.length === 0 ? (
+            <p className="text-xs text-gray-400 italic">No other SK news yet.</p>
+          ) : (
+            sidebarNews.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => navigate(`/news/${item._id}`)}
+                className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4 cursor-pointer"
+              >
+                <div className="w-20 h-20 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0">
+                  {item.image && (
+                    <img src={imgSrc(item.image)} alt={item.title} className="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div className="space-y-1 flex-1 min-w-0">
+                  <h4 className="text-xs font-black text-emerald-950 uppercase truncate">{item.title}</h4>
+                  <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-semibold">
+                    <Calendar className="w-3 h-3" />
+                    {formatDate(item.date)}
+                  </div>
+                  <p className="text-[11px] text-gray-600 line-clamp-2">{item.description}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

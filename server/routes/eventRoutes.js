@@ -34,14 +34,15 @@ router.post('/', upload.array('images', 5), async (req, res) => {
     const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const newEvent = new Event({
-      title: req.body.title,
-      tagline: req.body.tagline,
-      description: req.body.description,
-      date: req.body.date,
-      time: req.body.time,
-      location: req.body.location,
-      images: imagePaths
-    });
+  title: req.body.title,
+  tagline: req.body.tagline,
+  description: req.body.description,
+  date: req.body.date,
+  time: req.body.time,
+  location: req.body.location,
+  category: req.body.category,
+  images: imagePaths,
+});
 
     const savedEvent = await newEvent.save();
     res.status(201).json(savedEvent);
@@ -62,13 +63,14 @@ router.put('/:id', upload.array('images', 5), async (req, res) => {
     const finalImages = [...existingImgs, ...newImagePaths];
 
     const updateData = {
-      title: req.body.title,
-      tagline: req.body.tagline,
-      description: req.body.description,
-      date: req.body.date,
-      time: req.body.time,
-      location: req.body.location,
-      images: finalImages,
+    title: req.body.title,
+    tagline: req.body.tagline,
+    description: req.body.description,
+    date: req.body.date,
+    time: req.body.time,
+    location: req.body.location,
+    category: req.body.category,
+    images: finalImages,
     };
 
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, updateData, { new: true });

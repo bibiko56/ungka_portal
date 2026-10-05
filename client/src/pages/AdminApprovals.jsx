@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useModal } from '../context/ModalContext';
 
 export default function AdminApprovals() {
   const [pending, setPending] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'user', or 'admin'
+  const { alert, confirm } = useModal();
 
   const token = localStorage.getItem('token');
 
@@ -35,12 +37,13 @@ export default function AdminApprovals() {
       if (!res.ok) throw new Error(data.message);
       setPending((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
 
   const handleDecline = async (type, id) => {
-    if (!window.confirm('Decline this registration? This cannot be undone.')) return;
+    const confirmed = await confirm('Decline this registration? This cannot be undone.');
+    if (!confirmed) return;
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/decline/${type}/${id}`, {
         method: 'PUT',
@@ -50,7 +53,7 @@ export default function AdminApprovals() {
       if (!res.ok) throw new Error(data.message);
       setPending((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
-      alert(err.message);
+      await alert(err.message, 'danger');
     }
   };
 

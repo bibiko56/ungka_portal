@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
+import JoinAuthModal from '../components/JoinAuthModal';
 
 export default function Volunteer() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   // State to track which event is currently opened in the modal
   const [selectedModalEvent, setSelectedModalEvent] = useState(null);
@@ -13,6 +16,7 @@ export default function Volunteer() {
   const [selectedDateStr, setSelectedDateStr] = useState(null);
 
   const { user } = useAuth();
+  const { alert } = useModal();
 
   // Fetch events from API
   useEffect(() => {
@@ -33,12 +37,11 @@ export default function Volunteer() {
     fetchEvents();
   }, []);
 
-  // 🟢 Add the Join Event handler function here
 const handleJoinEvent = async (eventId) => {
-    if (!user) {
-      alert('Please log in first to join events.');
-      return;
-    }
+  if (!user) {
+    setShowAuthModal(true);
+    return;
+  }
 
     // Fallback logic to find the name or use part of the email
     const userName = user.name || user.username || user.fullName || user.email.split('@')[0];
@@ -56,34 +59,15 @@ const handleJoinEvent = async (eventId) => {
 
       const data = await res.json();
       if (res.ok) {
-        alert('Successfully joined the event!');
+        await alert('Successfully joined the event!', 'success');
       } else {
-        alert(data.error || 'Failed to join event.');
+        await alert(data.error || 'Failed to join event.', 'danger');
       }
     } catch (err) {
       console.error('Error joining event:', err);
-      alert('Server error while joining event.');
+      await alert('Server error while joining event.', 'danger');
     }
   };
-
-  // Fetch events from API
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
-        if (res.ok) {
-          const data = await res.json();
-          setEvents(data);
-        }
-      } catch (err) {
-        console.error('Error fetching events for calendar:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
 
   // Helper to format dates nicely: "Month Day, Year" (e.g., "October 27, 2026")
   const formatDateString = (dateStr) => {
@@ -286,11 +270,11 @@ const handleJoinEvent = async (eventId) => {
                         See Details
                       </button>
                       <button 
-  onClick={() => handleJoinEvent(evt._id)}
-  className="px-4 py-2 rounded-full bg-[#013220] text-white font-bold text-xs hover:bg-[#002214] transition-colors shadow-sm"
->
-  Join Event
-</button>
+                        onClick={() => handleJoinEvent(evt._id)}
+                        className="px-4 py-2 rounded-full bg-[#013220] text-white font-bold text-xs hover:bg-[#002214] transition-colors shadow-sm"
+                      >
+                        Join Event
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -364,15 +348,18 @@ const handleJoinEvent = async (eventId) => {
                 Close
               </button>
               <button 
-  onClick={() => handleJoinEvent(selectedModalEvent._id)}
-  className="bg-[#004A2D] hover:bg-[#003822] text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors"
->
-  Join Event
-</button>
+                onClick={() => handleJoinEvent(selectedModalEvent._id)}
+                className="bg-[#004A2D] hover:bg-[#003822] text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors"
+              >
+                Join Event
+              </button>
             </div>
 
           </div>
         </div>
+      )}
+      {showAuthModal && (
+        <JoinAuthModal onClose={() => setShowAuthModal(false)} />
       )}
 
     </div>

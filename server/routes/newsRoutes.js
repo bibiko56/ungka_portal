@@ -22,13 +22,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET one article by id — public, used by the article detail page
+router.get('/:id', async (req, res) => {
+  try {
+    const article = await News.findById(req.params.id);
+    if (!article) return res.status(404).json({ message: 'Article not found' });
+    res.status(200).json(article);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch article' });
+  }
+});
+
 // POST create — admin only
 router.post('/', protect, adminOnly, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, tag, location, date } = req.body;
+    const { title, description, tag, location, date, section } = req.body;
 
     const newArticle = new News({
-      title, description, tag, location,
+      title, description, tag, location, section,
       date: date ? new Date(date) : new Date(),
       image: req.file ? `/uploads/${req.file.filename}` : '',
     });
@@ -43,10 +54,10 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
 // PUT update — admin only
 router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, tag, location, date, existingImage } = req.body;
+    const { title, description, tag, location, date, section, existingImage } = req.body;
 
     const updateData = {
-      title, description, tag, location,
+      title, description, tag, location, section,
       date: date ? new Date(date) : new Date(),
     };
 

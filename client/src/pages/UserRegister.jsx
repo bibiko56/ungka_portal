@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { validatePassword } from '../utils/validatePassword';
 import PasswordChecklist from '../components/PasswordChecklist';
+import { useModal } from '../context/ModalContext';
 
 export default function UserRegister() {
   const navigate = useNavigate();
+  const { alert } = useModal();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -64,7 +66,7 @@ export default function UserRegister() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      alert('Registration submitted! You will receive an SMS once your account is approved.');
+      await alert('Registration submitted! You will receive an SMS once your account is approved.', 'success');
       navigate('/login/user');
     } catch (err) {
       setError(err.message);

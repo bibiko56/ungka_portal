@@ -1,47 +1,50 @@
 import React, { useRef } from 'react';
+import {
+  MessageSquareWarning, Gavel, HelpCircle, Award, FileCheck, IdCard, Receipt,
+} from 'lucide-react';
 
 const barangayServicesData = [
   {
     id: 1,
     title: 'Complaints',
     description: 'Filing official reports, blotters, or disputes for local dispute resolution (Katarungang Pambarangay).',
-    image: '/path-to-complaints.png',
+    icon: MessageSquareWarning,
   },
   {
     id: 2,
     title: 'Summon',
     description: 'Issuing formal notices or summonses for involved parties to attend barangay conciliation sessions.',
-    image: '/path-to-summon.png',
+    icon: Gavel,
   },
   {
     id: 3,
     title: 'Inquiries',
     description: 'Processing general questions regarding local barangay records, requirements, fees, and government programs.',
-    image: '/path-to-inquiries.png',
+    icon: HelpCircle,
   },
   {
     id: 4,
     title: 'Certification',
     description: 'Issuing official barangay certificates, clearances, and endorsements for employment, business, or government requirements.',
-    image: '/path-to-certification.png',
+    icon: Award,
   },
   {
     id: 5,
-    title: 'Barangay Clearance',
+    title: 'Certificate of Residency',
     description: 'Processing official clearance permits for residency verification, business operations, and legal applications.',
-    image: '/path-to-clearance.png',
+    icon: FileCheck,
   },
   {
     id: 6,
     title: 'Cedula',
-    description: 'Securing a Community Tax Certificate (CTC), an essential government-issued identification document...',
-    image: '/path-to-cedula.png',
+    description: 'Securing a Community Tax Certificate (CTC), an essential government-issued identification document.',
+    icon: IdCard,
   },
   {
     id: 7,
     title: 'Official Receipts',
     description: 'Issuing proof of payment for local fees, permits, taxes, or other financial transactions processed by the office.',
-    image: '/path-to-official-receipts.png',
+    icon: Receipt,
   },
 ];
 
@@ -62,7 +65,7 @@ export default function BarangayHallServices() {
 
   return (
     <section className="bg-white py-12 px-4 sm:px-8 max-w-7xl mx-auto space-y-6">
-      
+
       {/* SECTION HEADER BANNER */}
       <div className="space-y-6">
         {/* Slanted Green Header Badge */}
@@ -95,7 +98,7 @@ export default function BarangayHallServices() {
 
       {/* WHITE BACKGROUND BOX WITH GREEN BORDER */}
       <div className="bg-white border-2 border-[#1e3e2b] rounded-3xl p-6 sm:p-8 text-gray-800 shadow-md space-y-6">
-        
+
         {/* Intro Subtext */}
         <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl font-medium">
           Barangay Ungka II offers administrative and public service assistance, including complaint blotters, conciliation summons, general inquiries, and official certifications.
@@ -106,31 +109,32 @@ export default function BarangayHallServices() {
           ref={scrollContainerRef}
           className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-[#1e3e2b] scrollbar-track-gray-100 snap-x snap-mandatory scroll-smooth"
         >
-          {barangayServicesData.map((service) => (
-            <div
-              key={service.id}
-              className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300"
-            >
-              {/* Card Image */}
-              <div className="h-44 w-full bg-gray-100 overflow-hidden relative">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+          {barangayServicesData.map((service) => {
+            const Icon = service.icon;
+            return (
+              <div
+                key={service.id}
+                className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300"
+              >
+                {/* Card Icon */}
+                <div className="h-44 w-full bg-white-50 border border-emerald-200 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl border-2 border-[#1e3e2b] flex items-center justify-center text-[#1e3e2b] group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-8 h-8" strokeWidth={2} />
+                  </div>
+                </div>
 
-              {/* Card Text Content */}
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between space-y-2">
-                <h4 className="font-bold text-base text-[#1e3e2b] leading-snug">
-                  {service.title}
-                </h4>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
+                {/* Card Text Content */}
+                <div className="p-4 bg-white flex-1 flex flex-col justify-between space-y-2">
+                  <h4 className="font-bold text-base text-[#1e3e2b] leading-snug">
+                    {service.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Bottom Actions Row */}

@@ -1,72 +1,76 @@
 import React, { useRef } from 'react';
+import {
+  Stethoscope, Syringe, Bug, Pill, HeartHandshake, Baby,
+  ClipboardCheck, Apple, Bandage, FileText, BookOpen,
+} from 'lucide-react';
 
 const servicesData = [
   {
     id: 1,
     title: 'Medical Consultation',
     description: 'Provides basic check-ups, consultations, and health advice for residents.',
-    image: '/path-to-medical-consultation.png',
+    icon: Stethoscope,
   },
   {
     id: 2,
     title: 'Immunization',
     description: 'Offers routine vaccinations to help protect children and residents from diseases.',
-    image: '/path-to-immunization.png',
+    icon: Syringe,
   },
   {
     id: 3,
     title: 'Dengue Prevention',
     description: 'Provides information and guidance on preventing dengue and controlling mosquito breeding.',
-    image: '/path-to-dengue-prevention.png',
+    icon: Bug,
   },
   {
     id: 4,
     title: 'Medicine Assistance',
     description: 'Helps residents access available medicines for common health conditions.',
-    image: '/path-to-medicine-assistance.png',
+    icon: Pill,
   },
   {
     id: 5,
-    title: 'Maternal & Child Care',
+    title: 'Maternal Care',
     description: 'Comprehensive check-ups and nutritional monitoring for expecting mothers and infants.',
-    image: '/path-to-maternal-care.png',
+    icon: HeartHandshake,
   },
   {
     id: 6,
     title: 'Child Health',
     description: 'Growth monitoring, nutrition assessment, and health check-ups for children.',
-    image: '/path-to-child-care.png',
+    icon: Baby,
   },
   {
     id: 7,
     title: 'Health Screening',
     description: 'Basic monitoring such as blood pressure, temperature, and other available screenings.',
-    image: '/path-to-health-screening.png',
+    icon: ClipboardCheck,
   },
   {
     id: 8,
     title: 'Nutrition Services',
     description: 'Nutrition counseling and monitoring for children, mothers, and other residents.',
-    image: '/path-to-nutrition.png',
+    icon: Apple,
   },
   {
     id: 9,
     title: 'First Aid',
     description: 'Assistance for minor injuries and common health concerns.',
-    image: '/path-to-first-aid.png',
+    icon: Bandage,
   },
   {
     id: 10,
     title: 'Health Records',
     description: 'Assistance with available health-related records and certifications.',
-    image: '/path-to-health-record.png',
+    icon: FileText,
   },
   {
     id: 11,
-    title: 'Health Educationh',
+    title: 'Health Education',
     description: 'Information campaigns about sanitation, hygiene, disease prevention, and healthy living.',
-    image: '/path-to-health-education.png',
-  }
+    icon: BookOpen,
+  },
 ];
 
 export default function HealthCenterServices() {
@@ -87,9 +91,9 @@ export default function HealthCenterServices() {
   return (
     <section className="bg-white py-12 px-4 sm:px-8 max-w-7xl mx-auto space-y-6">
       <div className="inline-block bg-[#1e3e2b] text-white font-extrabold text-xl sm:text-2xl px-6 py-2.5 rounded-r-full shadow-md">
-          Health Center Services
-        </div>
-      
+        Health Center Services
+      </div>
+
       {/* SERVICES OFFERED HEADING */}
       <h3 className="text-2xl sm:text-3xl font-black text-[#1e3e2b]">
         Services Offered:
@@ -97,7 +101,7 @@ export default function HealthCenterServices() {
 
       {/* WHITE BACKGROUND BOX WITH GREEN BORDER */}
       <div className="bg-white border-2 border-[#1e3e2b] rounded-3xl p-6 sm:p-8 text-gray-800 shadow-md space-y-6">
-        
+
         {/* Intro Subtext */}
         <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl font-medium">
           The Barangay Ungka II Health Center offers basic healthcare services, including check-ups, immunization, maternal and child care, medicine assistance, and health education.
@@ -108,31 +112,32 @@ export default function HealthCenterServices() {
           ref={scrollContainerRef}
           className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-[#1e3e2b] scrollbar-track-gray-100 snap-x snap-mandatory scroll-smooth"
         >
-          {servicesData.map((service) => (
-            <div
-              key={service.id}
-              className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300"
-            >
-              {/* Card Image */}
-              <div className="h-44 w-full bg-gray-100 overflow-hidden relative">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+          {servicesData.map((service) => {
+            const Icon = service.icon;
+            return (
+              <div
+                key={service.id}
+                className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300"
+              >
+                {/* Card Icon */}
+                <div className="h-44 w-full bg-white-50 border border-emerald-200 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl border-2 border-[#1e3e2b] flex items-center justify-center text-[#1e3e2b] group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-8 h-8" strokeWidth={2} />
+                  </div>
+                </div>
 
-              {/* Card Text Content */}
-              <div className="p-4 bg-white flex-1 flex flex-col justify-between space-y-2">
-                <h4 className="font-bold text-base text-[#1e3e2b] leading-snug">
-                  {service.title}
-                </h4>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
+                {/* Card Text Content */}
+                <div className="p-4 bg-white flex-1 flex flex-col justify-between space-y-2">
+                  <h4 className="font-bold text-base text-[#1e3e2b] leading-snug">
+                    {service.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Bottom Actions Row */}
