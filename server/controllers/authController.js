@@ -230,15 +230,20 @@ export const approveAccount = async (req, res) => {
 export const declineAccount = async (req, res) => {
   try {
     const { type, id } = req.params;
+    const { reason } = req.body;
 
     const account = await getModel(type).findById(id);
     if (!account) {
       return res.status(404).json({ message: 'Account not found' });
     }
 
+    const reasonLine = reason?.trim()
+      ? ` Reason: ${reason.trim()}.`
+      : '';
+
     await sendSms(
       account.phoneNumber,
-      `Hi ${account.fullName}, your Ungka Portal ${type} registration was not approved. Please visit the barangay office for details.`
+      `Hi ${account.fullName}, your Ungka Portal ${type} registration was not approved.${reasonLine} Please visit the barangay office for details.`
     );
 
     await account.deleteOne();

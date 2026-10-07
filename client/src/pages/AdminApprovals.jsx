@@ -42,20 +42,27 @@ export default function AdminApprovals() {
   };
 
   const handleDecline = async (type, id) => {
-    const confirmed = await confirm('Decline this registration? This cannot be undone.');
-    if (!confirmed) return;
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/decline/${type}/${id}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setPending((prev) => prev.filter((p) => p._id !== id));
-    } catch (err) {
-      await alert(err.message, 'danger');
-    }
-  };
+  const confirmed = await confirm('Decline this registration? The applicant will be notified by SMS.');
+  if (!confirmed) return;
+
+  const reason = window.prompt('Optional: add a reason to include in the SMS (leave blank to skip)') || '';
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/decline/${type}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reason }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+    setPending((prev) => prev.filter((p) => p._id !== id));
+  } catch (err) {
+    await alert(err.message, 'danger');
+  }
+};
 
   // Filtered array based on active filter state
   const filteredPending = pending.filter((p) => {
