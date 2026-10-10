@@ -2,6 +2,7 @@ import express from 'express';
 import {
   register, login, adminRegister, adminLogin,
   getPendingAccounts, approveAccount, declineAccount,forgotPassword, resetPassword,verifyResetCode,
+  getApprovedAccounts, revokeAccount,
 } from '../controllers/authController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
@@ -18,5 +19,8 @@ router.put('/decline/:type/:id', protect, adminOnly, declineAccount);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.post('/verify-reset-code', verifyResetCode);
+
+router.get('/approved', protect, adminOnly, getApprovedAccounts);
+router.put('/revoke/:type/:id', protect, adminOnly, revokeAccount);
 
 export default router;

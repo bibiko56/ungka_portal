@@ -6,6 +6,7 @@ import Admin from '../models/Admin.js';
 import { sendSms } from '../utils/sendSms.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { validatePassword } from '../utils/validatePassword.js';
+import { toE164PH, toLocalPH, phoneLookupRegex } from '../utils/formatPhone.js';
 
 // Picks the right collection based on 'user' or 'admin'
 const getModel = (type) => (type === 'admin' ? Admin : User);
@@ -17,11 +18,16 @@ const getModel = (type) => (type === 'admin' ? Admin : User);
 // Register User
 export const register = async (req, res) => {
   try {
-    const { fullName, email, phoneNumber, gender, identity, password, zone, role } = req.body;
+    const { fullName, email, phoneNumber, gender, identity, password, zone } = req.body;
 
     const passwordError = validatePassword(password);
     if (passwordError) {
       return res.status(400).json({ message: passwordError });
+    }
+
+    const localPhone = toLocalPH(phoneNumber);
+    if (!localPhone) {
+      return res.status(400).json({ message: 'Enter a valid mobile number, e.g. 09123456789' });
     }
 
     const userExists = await User.findOne({ email });
@@ -29,14 +35,23 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    const phoneTaken = await User.findOne({ phoneNumber: phoneLookupRegex(localPhone) });
+    if (phoneTaken) {
+      return res.status(400).json({ message: 'This phone number is already registered' });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      fullName, email, phoneNumber, gender, identity,
+      fullName,
+      email,
+      phoneNumber: localPhone,
+      gender,
+      identity,
       password: hashedPassword,
       zone,
-      role: role || 'user',
+      role: 'user', // never taken from the request body
       isApproved: false,
     });
 
@@ -104,9 +119,19 @@ export const adminRegister = async (req, res) => {
       return res.status(400).json({ message: passwordError });
     }
 
+    const localPhone = toLocalPH(phoneNumber);
+    if (!localPhone) {
+      return res.status(400).json({ message: 'Enter a valid mobile number, e.g. 09123456789' });
+    }
+
     const adminExists = await Admin.findOne({ email });
     if (adminExists) {
       return res.status(400).json({ message: 'Admin account already exists with this email' });
+    }
+
+    const phoneTaken = await Admin.findOne({ phoneNumber: phoneLookupRegex(localPhone) });
+    if (phoneTaken) {
+      return res.status(400).json({ message: 'This phone number is already registered' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -115,7 +140,7 @@ export const adminRegister = async (req, res) => {
     const admin = await Admin.create({
       fullName,
       email,
-      phoneNumber,
+      phoneNumber: localPhone,
       password: hashedPassword,
       role: 'admin',
       isApproved: false,
@@ -201,6 +226,23 @@ export const getPendingAccounts = async (req, res) => {
   }
 };
 
+// GET both approved users and approved admins
+export const getApprovedAccounts = async (req, res) => {
+  try {
+    const approvedUsers = await User.find({ isApproved: true }).select('-password');
+    const approvedAdmins = await Admin.find({ isApproved: true }).select('-password');
+
+    const combined = [
+      ...approvedUsers.map((u) => ({ ...u.toObject(), accountType: 'user' })),
+      ...approvedAdmins.map((a) => ({ ...a.toObject(), accountType: 'admin' })),
+    ];
+
+    res.status(200).json(combined);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching approved accounts' });
+  }
+};
+
 // Approve either a user or an admin
 export const approveAccount = async (req, res) => {
   try {
@@ -214,12 +256,19 @@ export const approveAccount = async (req, res) => {
     account.isApproved = true;
     await account.save();
 
-    await sendSms(
-      account.phoneNumber,
-      `Hi ${account.fullName}, your Ungka Portal ${type} account has been approved. You can now log in.`
-    );
+    // A failed text shouldn't undo the approval
+    let smsSent = true;
+    try {
+      await sendSms(
+        account.phoneNumber,
+        `Hi ${account.fullName}, your Ungka Portal ${type} account has been approved. You can now log in.`
+      );
+    } catch (smsError) {
+      smsSent = false;
+      console.error('Approval SMS failed:', smsError.message);
+    }
 
-    res.status(200).json({ message: `${type} approved and notified by SMS`, account });
+    res.status(200).json({ message: `${type} approved`, smsSent });
   } catch (error) {
     console.error('Approve Account Error:', error);
     res.status(500).json({ message: 'Server error approving account' });
@@ -230,21 +279,27 @@ export const approveAccount = async (req, res) => {
 export const declineAccount = async (req, res) => {
   try {
     const { type, id } = req.params;
-    const { reason } = req.body;
+    const { reason } = req.body || {};
 
     const account = await getModel(type).findById(id);
     if (!account) {
       return res.status(404).json({ message: 'Account not found' });
     }
 
-    const reasonLine = reason?.trim()
-      ? ` Reason: ${reason.trim()}.`
-      : '';
+    const reasonLine = reason?.trim() ? ` Reason: ${reason.trim()}.` : '';
 
-    await sendSms(
-      account.phoneNumber,
-      `Hi ${account.fullName}, your Ungka Portal ${type} registration was not approved.${reasonLine} Please visit the barangay office for details.`
-    );
+    // If the text can't be sent, keep the account so the admin can retry
+    try {
+      await sendSms(
+        account.phoneNumber,
+        `Hi ${account.fullName}, your Ungka Portal ${type} registration was not approved.${reasonLine} Please visit the barangay office for details.`
+      );
+    } catch (smsError) {
+      console.error('Decline SMS failed:', smsError.message);
+      return res.status(502).json({
+        message: "The SMS couldn't be sent, so this account wasn't declined. Check that the SMS phone is online, then try again.",
+      });
+    }
 
     await account.deleteOne();
 
@@ -255,14 +310,50 @@ export const declineAccount = async (req, res) => {
   }
 };
 
+// Revoke a previously approved account: moves it back to Pending Approvals
+export const revokeAccount = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+
+    const account = await getModel(type).findById(id);
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    account.isApproved = false;
+    await account.save();
+
+    res.status(200).json({ message: `${type} approval revoked` });
+  } catch (error) {
+    console.error('Revoke Account Error:', error);
+    res.status(500).json({ message: 'Server error revoking account' });
+  }
+};
+
 /* ------------------------------------------------------------------ */
 /*  FORGOT PASSWORD                                                    */
 /* ------------------------------------------------------------------ */
 
-const findWithResetFields = (accountType, email) =>
-  getModel(accountType)
-    .findOne({ email })
-    .select('+resetCode +resetCodeExpires +resetAttempts');
+// Finds an account by mobile number (SMS) or email, depending on how the code is sent
+const findAccountByContact = async (accountType, method, contact, { withResetFields = false } = {}) => {
+  if (typeof contact !== 'string') return null;
+
+  const Model = getModel(accountType);
+  let query;
+
+  if (method === 'sms') {
+    const regex = phoneLookupRegex(contact);
+    if (!regex) return null;
+    query = Model.findOne({ phoneNumber: regex });
+  } else {
+    query = Model.findOne({ email: contact });
+  }
+
+  if (withResetFields) {
+    query = query.select('+resetCode +resetCodeExpires +resetAttempts');
+  }
+  return query;
+};
 
 // Returns true only if the code is valid.
 // Wrong guesses are counted, and the code locks after 5.
@@ -284,19 +375,27 @@ const checkResetCode = async (account, code) => {
   return true;
 };
 
-// Step 1: generate + "send" a code
+// Step 1: generate + send a code
 export const forgotPassword = async (req, res) => {
   try {
-    const { email, method, accountType } = req.body;
+    const { contact, method, accountType } = req.body;
 
     if (!['sms', 'email'].includes(method)) {
       return res.status(400).json({ message: 'Please choose SMS or email' });
     }
 
-    const account = await getModel(accountType).findOne({ email });
+    if (method === 'sms' && !toE164PH(contact)) {
+      return res.status(400).json({ message: 'Enter a valid mobile number, e.g. 09123456789' });
+    }
 
-    // Same response whether or not the account exists, so this
-    // can't be used to check who has an account
+    const account = await findAccountByContact(accountType, method, contact);
+
+    // For SMS, tell the person when the number isn't registered
+    if (method === 'sms' && !account) {
+      return res.status(404).json({ message: 'No account is registered with that phone number.' });
+    }
+
+    // Email keeps the generic response so it can't be used to check who has an account
     const response = { message: `If an account exists, a code was sent by ${method}.` };
     if (!account) return res.status(200).json(response);
 
@@ -306,12 +405,23 @@ export const forgotPassword = async (req, res) => {
     account.resetAttempts = 0;
     await account.save();
 
-    if (method === 'sms') {
-      await sendSms(account.phoneNumber, `Your Ungka Portal reset code is ${code}. It expires in 10 minutes.`);
-    } else {
-      await sendEmail(account.email, 'Ungka Portal password reset', `Your reset code is ${code}. It expires in 10 minutes.`);
+    try {
+      if (method === 'sms') {
+        await sendSms(account.phoneNumber, `Your Ungka Portal reset code is ${code}. It expires in 10 minutes.`);
+      } else {
+        await sendEmail(account.email, 'Ungka Portal password reset', `Your reset code is ${code}. It expires in 10 minutes.`);
+      }
+    } catch (sendError) {
+      console.error(`Reset ${method} failed:`, sendError.message);
+      return res.status(502).json({
+        message: `We couldn't send the ${method === 'sms' ? 'SMS' : 'email'} right now. Please try again later or use the other option.`,
+      });
     }
 
+    // TESTING ONLY: shows the code on screen. Remove before launch.
+    if (process.env.NODE_ENV !== 'production') {
+      response.devCode = code;
+    }
 
     res.status(200).json(response);
   } catch (error) {
@@ -323,9 +433,9 @@ export const forgotPassword = async (req, res) => {
 // Step 2: verify the code only
 export const verifyResetCode = async (req, res) => {
   try {
-    const { email, accountType, code } = req.body;
+    const { accountType, method, contact, code } = req.body;
 
-    const account = await findWithResetFields(accountType, email);
+    const account = await findAccountByContact(accountType, method, contact, { withResetFields: true });
     const valid = await checkResetCode(account, code);
 
     if (!valid) {
@@ -341,14 +451,14 @@ export const verifyResetCode = async (req, res) => {
 // Step 3: set the new password (re-checks the code)
 export const resetPassword = async (req, res) => {
   try {
-    const { email, accountType, code, newPassword } = req.body;
+    const { accountType, method, contact, code, newPassword } = req.body;
 
     const passwordError = validatePassword(newPassword);
     if (passwordError) {
       return res.status(400).json({ message: passwordError });
     }
 
-    const account = await findWithResetFields(accountType, email);
+    const account = await findAccountByContact(accountType, method, contact, { withResetFields: true });
     const valid = await checkResetCode(account, code);
 
     if (!valid) {

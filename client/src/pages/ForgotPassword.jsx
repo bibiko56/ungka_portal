@@ -21,13 +21,10 @@ function CodeInput({ value, onChange, length = 6 }) {
 
   const focusBox = (i) => inputs.current[i]?.focus();
 
-  // Typing a digit: keep only the last character typed, then move forward
   const handleChange = (i, e) => {
     const digit = e.target.value.replace(/\D/g, '').slice(-1);
     if (!digit) return;
 
-    // If earlier circles are still empty, fill the first empty one
-    // instead of leaving a gap
     const firstEmpty = digits.findIndex((d) => !d);
     const target = firstEmpty !== -1 ? Math.min(i, firstEmpty) : i;
 
@@ -43,10 +40,10 @@ function CodeInput({ value, onChange, length = 6 }) {
       e.preventDefault();
       const next = [...digits];
       if (next[i]) {
-        next[i] = ''; // clear this circle
+        next[i] = '';
         onChange(next.join(''));
       } else if (i > 0) {
-        next[i - 1] = ''; // empty circle: clear the previous one and step back
+        next[i - 1] = '';
         onChange(next.join(''));
         focusBox(i - 1);
       }
@@ -57,7 +54,6 @@ function CodeInput({ value, onChange, length = 6 }) {
     }
   };
 
-  // Pasting "123456" fills all the circles at once
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, length);
@@ -95,10 +91,10 @@ export default function ForgotPassword() {
   const loginPath = accountType === 'admin' ? '/login/admin' : '/login/user';
   const navigate = useNavigate();
 
-  // 1 = email + method, 2 = enter code, 3 = new password, 4 = done
+  // 1 = method + contact, 2 = enter code, 3 = new password, 4 = done
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
   const [method, setMethod] = useState('sms');
+  const [contact, setContact] = useState(''); // mobile number (SMS) or email
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -123,9 +119,15 @@ export default function ForgotPassword() {
   const handleRequest = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (method === 'sms' && !/^09\d{9}$/.test(contact)) {
+      setErrorMsg('Enter a valid mobile number, e.g. 09123456789');
+      return;
+    }
+
     setLoading(true);
     try {
-      const data = await post('forgot-password', { email, method, accountType });
+      const data = await post('forgot-password', { contact, method, accountType });
       setDevCode(data.devCode || '');
       setCode('');
       setStep(2);
@@ -142,7 +144,7 @@ export default function ForgotPassword() {
     setErrorMsg('');
     setLoading(true);
     try {
-      await post('verify-reset-code', { email, accountType, code });
+      await post('verify-reset-code', { accountType, method, contact, code });
       setStep(3);
     } catch (err) {
       setErrorMsg(err.message);
@@ -162,7 +164,7 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      await post('reset-password', { email, accountType, code, newPassword });
+      await post('reset-password', { accountType, method, contact, code, newPassword });
       setStep(4);
     } catch (err) {
       // Code expired or got locked while on this step: start over
@@ -182,7 +184,11 @@ export default function ForgotPassword() {
   const methodOption = (value, label, Icon) => (
     <button
       type="button"
-      onClick={() => setMethod(value)}
+      onClick={() => {
+        setMethod(value);
+        setContact('');
+        setErrorMsg('');
+      }}
       className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-bold transition-all ${
         method === value
           ? 'border-emerald-700 bg-emerald-50 text-emerald-900'
@@ -208,7 +214,7 @@ export default function ForgotPassword() {
         <div className="text-center space-y-2 pt-2">
           <h1 className="text-2xl font-extrabold text-emerald-950">{TITLES[step]}</h1>
           <p className="text-xs text-gray-600 font-medium">
-            {step === 1 && 'Enter your email and choose where to receive a verification code.'}
+            {step === 1 && 'Choose how to receive your verification code, then enter the matching mobile number or email.'}
             {step === 2 && `Enter the 6-digit code we sent by ${method === 'sms' ? 'SMS' : 'email'}.`}
             {step === 3 && 'Code verified. Choose a new password.'}
             {step === 4 && 'You can now sign in with your new password.'}
@@ -221,20 +227,9 @@ export default function ForgotPassword() {
           </div>
         )}
 
-        {/* STEP 1: email + method */}
+        {/* STEP 1: method + mobile number or email */}
         {step === 1 && (
           <form onSubmit={handleRequest} className="space-y-4">
-            <div className="relative flex items-center">
-              <Mail className="w-5 h-5 absolute left-4 text-emerald-800" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                className={inputClass}
-              />
-            </div>
             <div className="space-y-2">
               <p className="text-xs font-bold text-emerald-950 ml-1">Send code via</p>
               <div className="flex gap-3">
@@ -242,6 +237,27 @@ export default function ForgotPassword() {
                 {methodOption('email', 'Email', Mail)}
               </div>
             </div>
+
+            <div className="relative flex items-center">
+              {method === 'sms' ? (
+                <Smartphone className="w-5 h-5 absolute left-4 text-emerald-800" />
+              ) : (
+                <Mail className="w-5 h-5 absolute left-4 text-emerald-800" />
+              )}
+              <input
+                type={method === 'sms' ? 'tel' : 'email'}
+                inputMode={method === 'sms' ? 'numeric' : undefined}
+                maxLength={method === 'sms' ? 11 : undefined}
+                required
+                value={contact}
+                onChange={(e) =>
+                  setContact(method === 'sms' ? e.target.value.replace(/\D/g, '').slice(0, 11) : e.target.value)
+                }
+                placeholder={method === 'sms' ? '09*********' : 'Email address'}
+                className={inputClass}
+              />
+            </div>
+
             <button
               type="submit"
               disabled={loading}

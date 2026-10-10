@@ -3,6 +3,7 @@ import AdminSidebar from '../components/AdminSidebar';
 import ManageEvents from './ManageEvents';
 import CommunityReports from './CommunityReports';
 import AdminApprovals from './AdminApprovals';
+import ApprovedAccounts from './ApprovedAccounts';
 import ManageOfficials from './ManageOfficials';
 import ManageNews from './ManageNews';
 import { useModal } from '../context/ModalContext';
@@ -332,6 +333,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'approvals' && <AdminApprovals />}
         {activeTab === 'officials' && <ManageOfficials />}
+        {activeTab === 'approved' && <ApprovedAccounts />}
         {activeTab === 'news' && <ManageNews />}
       </main>
 

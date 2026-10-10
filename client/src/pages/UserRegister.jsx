@@ -32,6 +32,11 @@ export default function UserRegister() {
     e.preventDefault();
     setError('');
 
+    if (!/^09\d{9}$/.test(formData.phoneNumber)) {
+  setError('Enter a valid mobile number, e.g. 09123456789');
+  return;
+}
+
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       setError(passwordError);
@@ -149,26 +154,25 @@ export default function UserRegister() {
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
               
               {/* Phone Number */}
-              <div className="sm:col-span-5 space-y-1">
-                <label className="text-xs font-bold text-emerald-950 block ml-1">
-                  Phone Number
-                </label>
-                <div className="flex items-center space-x-2">
-                  <span className="bg-emerald-800 text-white font-bold text-xs px-3 py-2.5 rounded-xl border border-emerald-800 flex items-center justify-center">
-                    +63
-                  </span>
-                  <input
-                    type="tel"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="Ex. 917 123 4567"
-                    required
-                    className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl px-3 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                  />
-                </div>
-              </div>
-
+              {/* Phone Number */}
+<div className="sm:col-span-5 space-y-1">
+  <label className="text-xs font-bold text-emerald-950 block ml-1">
+    Phone Number
+  </label>
+  <input
+    type="tel"
+    inputMode="numeric"
+    name="phoneNumber"
+    value={formData.phoneNumber}
+    onChange={(e) =>
+      handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 11) } })
+    }
+    placeholder="09*********"
+    maxLength={11}
+    required
+    className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl px-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+  />
+</div>
               {/* Gender Radio Buttons */}
               <div className="sm:col-span-3 space-y-1">
                 <label className="text-xs font-bold text-emerald-950 block ml-1">

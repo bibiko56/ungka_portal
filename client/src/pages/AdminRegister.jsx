@@ -30,6 +30,11 @@ export default function AdminRegister() {
     e.preventDefault();
     setErrorMsg('');
 
+    if (!/^09\d{9}$/.test(formData.phoneNumber)) {
+  setErrorMsg('Enter a valid mobile number, e.g. 09123456789');
+  return;
+}
+
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
       setErrorMsg(passwordError);
@@ -156,14 +161,18 @@ export default function AdminRegister() {
                     <Phone className="w-4 h-4" />
                   </div>
                   <input
-                    type="tel"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="0912 345 6789"
-                    required
-                    className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
-                  />
+  type="tel"
+  inputMode="numeric"
+  name="phoneNumber"
+  value={formData.phoneNumber}
+  onChange={(e) =>
+    handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 11) } })
+  }
+  placeholder="09*********"
+  maxLength={11}
+  required
+  className="w-full bg-gray-50 text-emerald-950 placeholder-gray-400 font-medium text-xs sm:text-sm rounded-xl pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all"
+/>
                 </div>
               </div>
 
