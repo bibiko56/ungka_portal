@@ -44,27 +44,27 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
-      fullName,
-      email,
-      phoneNumber: localPhone,
-      gender,
-      identity,
-      password: hashedPassword,
-      zone,
-      role: 'user', // never taken from the request body
-      isApproved: false,
-    });
+  fullName,
+  email,
+  phoneNumber: localPhone,
+  gender,
+  identity,
+  password: hashedPassword,
+  zone,
+  role: 'user',
+  isApproved: true, // residents can log in right away
+});
 
-    res.status(201).json({
-      message: 'Registration submitted. You will be notified by SMS once your account is approved.',
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        isApproved: user.isApproved,
-      },
-    });
+res.status(201).json({
+  message: 'Registration successful. You can now log in.',
+  user: {
+    id: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role,
+    isApproved: user.isApproved,
+  },
+});
   } catch (error) {
     console.error('Register Error:', error);
     res.status(500).json({ message: error.message || 'Server error during registration' });

@@ -71,8 +71,8 @@ export default function UserRegister() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      await alert('Registration submitted! You will receive an SMS once your account is approved.', 'success');
-      navigate('/login/user');
+      await alert('Registration successful! You can now log in.', 'success');
+navigate('/login/user');
     } catch (err) {
       setError(err.message);
     } finally {
