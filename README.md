@@ -2,10 +2,10 @@ Website Over View
 Presents the main features and functions of the UServe website, including barangay information, officials, announcements, health center services, document requirements, community activities, volunteer registration, and problem reporting. It helps residents access important information and community services conveniently online.
 
 
-<img width="959" height="400" alt="image" src="https://github.com/user-attachments/assets/77e21233-457a-48d5-9fd5-a6b8b8b09fbf" />
-<img width="955" height="362" alt="image" src="https://github.com/user-attachments/assets/aa6c5e95-e9c9-4300-89ed-73cc5b17d60a" />
-<img width="955" height="353" alt="image" src="https://github.com/user-attachments/assets/a6fe0c3f-a8ab-489e-9e8d-a5a46fd8b10a" />
-<img width="959" height="408" alt="image" src="https://github.com/user-attachments/assets/6a4e1e69-b516-4e9b-86e7-191bce680128" />
+<img width="959" height="409" alt="image" src="https://github.com/user-attachments/assets/2cf51227-9b7b-420b-a64f-9c922ed8e88c" />
+<img width="959" height="411" alt="image" src="https://github.com/user-attachments/assets/e13a81d7-ac48-40aa-bc43-c81fe67ccfa3" />
+<img width="959" height="407" alt="image" src="https://github.com/user-attachments/assets/560390f1-a820-41de-80f9-217581a61bb8" />
+<img width="959" height="373" alt="image" src="https://github.com/user-attachments/assets/e972543b-2afc-41fe-870c-7eb3206496ea" />
 
 
 
