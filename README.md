@@ -1,4 +1,6 @@
 Website Over View
+Presents the main features and functions of the UServe website, including barangay information, officials, announcements, health center services, document requirements, community activities, volunteer registration, and problem reporting. It helps residents access important information and community services conveniently online.
+
 
 <img width="959" height="400" alt="image" src="https://github.com/user-attachments/assets/77e21233-457a-48d5-9fd5-a6b8b8b09fbf" />
 <img width="955" height="362" alt="image" src="https://github.com/user-attachments/assets/aa6c5e95-e9c9-4300-89ed-73cc5b17d60a" />
@@ -7,12 +9,15 @@ Website Over View
 
 
 
-Admin Over View
 
-<img width="373" height="278" alt="image" src="https://github.com/user-attachments/assets/01998435-0ffb-45f2-b437-b95f34f63e54" />
-<img width="347" height="259" alt="image" src="https://github.com/user-attachments/assets/576b24ea-ca00-4d96-9cd2-3e92098d6e25" />
-<img width="347" height="259" alt="image" src="https://github.com/user-attachments/assets/5f9b2fe7-f9a7-4429-8bc7-3e70018ebf0b" />
-<img width="346" height="257" alt="image" src="https://github.com/user-attachments/assets/bd0f3f5b-b3b9-4298-977e-e53c07cc0afd" />
+Admin Over View
+Provides a summary of the administrative dashboard, allowing administrators to manage user accounts, monitor website activities, update announcements, oversee volunteer events, manage service information, and maintain the accuracy and organization of the system’s content.
+
+
+<img width="939" height="394" alt="image" src="https://github.com/user-attachments/assets/1024c953-e516-4e45-b5e3-c3a7554482ba" />
+<img width="925" height="374" alt="image" src="https://github.com/user-attachments/assets/81ea42db-0cc7-4772-af7a-fe14a07f23d6" />
+<img width="959" height="394" alt="image" src="https://github.com/user-attachments/assets/7adda5ed-f985-4aa7-a028-e208e425f7c7" />
+
 
 
 
