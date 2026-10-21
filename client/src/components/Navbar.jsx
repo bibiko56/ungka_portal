@@ -1,38 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import ProfileMenu from './ProfileMenu';
+import { useAuth } from '../context/AuthContext';
+import { getInitials } from '../utils/getInitials';
 import NotificationBell from './NotificationBell';
+import ProfileMenu from './ProfileMenu';
+import LogoutConfirmModal from './LogoutConfirmModal';
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    // Read logged in user details from localStorage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error('Error reading user data:', err);
-      }
-    } else {
-      setUser(null);
-    }
-  }, [location]); // Re-run check whenever route changes
 
   // Close the mobile menu automatically whenever the route changes
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
+  // Both logout buttons open the confirmation first
+  const requestLogout = () => {
+    setMobileOpen(false);
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    logout();
     navigate('/login');
   };
 
@@ -79,15 +74,13 @@ export default function Navbar() {
 
         {/* Navigation Links — desktop only */}
         <div className="hidden md:flex items-center gap-5 text-sm font-medium text-gray-600">
-          <Link to="/" className={navLinkClass('/')}>Home</Link>
-          <Link to="/about" className={navLinkClass('/about')}>About Us</Link>
-          <Link to="/services" className={navLinkClass('/services')}>Services</Link>
-          <Link to="/news" className={navLinkClass('/news')}>News & Updates</Link>
-          <Link to="/volunteer" className={navLinkClass('/volunteer')}>Volunteer & Events</Link>
-          <Link to="/report-issue" className={navLinkClass('/report-issue')}>Report Issue</Link>
-          <Link to="/contact" className={navLinkClass('/contact')}>Contact</Link>
+          {navLinks.map((link) => (
+            <Link key={link.to} to={link.to} className={navLinkClass(link.to)}>
+              {link.label}
+            </Link>
+          ))}
 
-          {/* 🟢 EXCLUSIVE ADMIN DASHBOARD LINK */}
+          {/* Admin dashboard link */}
           {isAdmin && (
             <Link
               to="/admin/dashboard"
@@ -102,41 +95,42 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* User Auth Section — desktop only */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Right side: bell, profile / auth buttons, hamburger */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          {user && <NotificationBell />}
 
-          <NotificationBell />
+          {/* Desktop only */}
+          <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <ProfileMenu user={user} onLogout={requestLogout} />
+            ) : (
+              <>
+                <Link
+                  to="/register/user"
+                  className="border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  to="/login"
+                  className="bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                >
+                  Login
+                </Link>
+              </>
+            )}
+          </div>
 
-          {user ? (
-            /* 🟢 REPLACED: ProfileMenu dropdown instead of raw text & button */
-            <ProfileMenu user={user} onLogout={handleLogout} />
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link
-                to="/register/user"
-                className="border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-              >
-                Sign Up
-              </Link>
-              <Link
-                to="/login"
-                className="bg-emerald-900 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-              >
-                Login
-              </Link>
-            </div>
-          )}
+          {/* Hamburger toggle — mobile only */}
+          <button
+            onClick={() => setMobileOpen((prev) => !prev)}
+            className="md:hidden p-2 text-emerald-900 hover:bg-emerald-50 rounded-lg transition-colors"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
-
-        {/* Hamburger toggle — mobile only */}
-        <button
-          onClick={() => setMobileOpen((prev) => !prev)}
-          className="md:hidden p-2 text-emerald-900 hover:bg-emerald-50 rounded-lg transition-colors"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-
       </div>
 
       {/* Mobile dropdown panel */}
@@ -161,14 +155,29 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div className="pt-3 mt-2 border-t border-gray-100 px-4">
+          <div className="pt-3 mt-2 border-t border-gray-100 space-y-1">
             {user ? (
-              /* 🟢 ProfileMenu rendered cleanly in mobile drawer */
-              <div className="flex items-center justify-between py-1">
-                <ProfileMenu user={user} onLogout={handleLogout} />
-              </div>
+              <>
+                <div className="px-4 pb-2 flex items-center gap-3">
+                  <span className="w-10 h-10 rounded-full bg-emerald-800 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
+                    {getInitials(user.fullName)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">{user.fullName}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                </div>
+                <Link to="/profile" className={mobileLinkClass('/profile')}>Profile</Link>
+                <Link to="/settings" className={mobileLinkClass('/settings')}>Settings</Link>
+                <button
+                  onClick={requestLogout}
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4">
                 <Link
                   to="/register/user"
                   className="flex-1 text-center border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50 text-xs font-bold px-4 py-2.5 rounded-lg transition-colors"
@@ -185,6 +194,13 @@ export default function Navbar() {
             )}
           </div>
         </div>
+      )}
+
+      {showLogoutConfirm && (
+        <LogoutConfirmModal
+          onConfirm={confirmLogout}
+          onCancel={() => setShowLogoutConfirm(false)}
+        />
       )}
     </nav>
   );

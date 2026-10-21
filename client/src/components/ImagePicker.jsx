@@ -22,6 +22,7 @@ export default function ImagePicker({
   onFilesChange = () => {},
   rounded = 'rounded-xl',
   thumb = 'w-20 h-20',
+  dark = false, // set on dark/green backgrounds so the label and errors stay readable
 }) {
   const inputRef = useRef(null);
   const [error, setError] = useState('');
@@ -104,9 +105,9 @@ export default function ImagePicker({
 
   return (
     <div>
-      <label className="text-xs font-semibold text-gray-700 block mb-1">
+      <label className={`text-xs font-semibold block mb-1 ${dark ? 'text-white' : 'text-gray-700'}`}>
         {label}
-        {!single && <span className="text-gray-400 font-normal"> ({total}/{max})</span>}
+        {!single && <span className={`font-normal ${dark ? 'text-white/60' : 'text-gray-400'}`}> ({total}/{max})</span>}
       </label>
 
       {total > 0 && (
@@ -140,7 +141,7 @@ export default function ImagePicker({
         </button>
       )}
 
-      {error && <p className="text-[11px] text-red-600 font-medium mt-1">{error}</p>}
+      {error && <p className={`text-[11px] font-medium mt-1 ${dark ? 'text-red-200' : 'text-red-600'}`}>{error}</p>}
     </div>
   );
 }

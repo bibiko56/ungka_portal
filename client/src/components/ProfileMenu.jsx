@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
 import { getInitials } from '../utils/getInitials';
+import { imgUrl } from '../utils/profile';
 
 export default function ProfileMenu({ user, onLogout }) {
   const [open, setOpen] = useState(false);
@@ -38,8 +39,12 @@ export default function ProfileMenu({ user, onLogout }) {
         aria-expanded={open}
         className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-emerald-50 transition-colors"
       >
-        <span className="w-8 h-8 rounded-full bg-emerald-800 text-white text-xs font-bold flex items-center justify-center">
-          {getInitials(user.fullName)}
+        <span className="w-8 h-8 rounded-full bg-emerald-800 text-white text-xs font-bold flex items-center justify-center overflow-hidden">
+          {user.profileImage ? (
+            <img src={imgUrl(user.profileImage)} alt="" className="w-full h-full object-cover" />
+          ) : (
+            getInitials(user.fullName)
+          )}
         </span>
         <span className="hidden lg:block text-xs font-semibold text-gray-700 max-w-[110px] truncate">
           {firstName}

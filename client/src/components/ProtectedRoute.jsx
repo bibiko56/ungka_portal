@@ -1,17 +1,26 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
 
+// Guards a route: must be logged in (and an admin if adminOnly is set).
+// Reads localStorage directly so it stays in sync with Navbar, which
+// logs out by clearing localStorage rather than going through AuthContext.
 export default function ProtectedRoute({ children, adminOnly = false }) {
-  const { user } = useAuth(); // or check localStorage directly if context isn't fully set
+  const location = useLocation();
 
-  const storedUser = user || JSON.parse(localStorage.getItem('user') || 'null');
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    user = null;
+  }
+  const token = localStorage.getItem('token');
 
-  if (!storedUser) {
-    return <Navigate to="/login/user" replace />;
+  if (!user || !token) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (adminOnly && storedUser.role !== 'admin' && !storedUser.isAdmin) {
+  const isAdmin = user.role === 'admin' || user.isAdmin === true;
+  if (adminOnly && !isAdmin) {
     return <Navigate to="/" replace />;
   }
 

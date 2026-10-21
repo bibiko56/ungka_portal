@@ -19,6 +19,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Keep in sync when Settings updates the saved user
+  useEffect(() => {
+    const sync = () => {
+      try {
+        const stored = localStorage.getItem('user');
+        if (stored) setUser(JSON.parse(stored));
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener('user-updated', sync);
+    return () => window.removeEventListener('user-updated', sync);
+  }, []);
+
   const login = (userData, userToken) => {
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', userToken);

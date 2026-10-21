@@ -26,6 +26,8 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import IncidentReportForm from './pages/IncidentReportForm';
 import Officials from './pages/Officials';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 // Auth Page Imports
 import Login from './pages/Login';
@@ -92,6 +94,10 @@ function Layout() {
           <Route path="/register/admin" element={<AdminRegister />} />
           <Route path="/forgot-password/:type" element={<ForgotPassword />} />
           
+
+          {/* Logged-in user pages (residents and admins) */}
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
           {/* Protected Admin Routes */}
           <Route 

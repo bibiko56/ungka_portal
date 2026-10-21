@@ -2,10 +2,11 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import EventRegistration from '../models/EventRegistration.js';
 import Admin from '../models/Admin.js';
 import { sendSms } from '../utils/sendSms.js';
 import { sendEmail } from '../utils/sendEmail.js';
-import { validatePassword } from '../utils/validatePassword.js';
+import { validatePassword, validateNewPassword } from '../utils/validatePassword.js';
 import { toE164PH, toLocalPH, phoneLookupRegex } from '../utils/formatPhone.js';
 
 // Picks the right collection based on 'user' or 'admin'
@@ -101,7 +102,13 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        profileImage: user.profileImage || '',
+      },
     });
   } catch (error) {
     console.error('Login Error:', error);
@@ -197,6 +204,7 @@ export const adminLogin = async (req, res) => {
         fullName: admin.fullName,
         email: admin.email,
         role: admin.role,
+        profileImage: admin.profileImage || '',
       },
     });
   } catch (error) {
@@ -477,6 +485,7 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 // GET dashboard overview stats (admin only)
 export const getDashboardStats = async (req, res) => {
   try {
@@ -509,5 +518,152 @@ export const getDashboardStats = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching dashboard stats' });
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/*  PROFILE & SETTINGS (any logged-in user or admin)                   */
+/* ------------------------------------------------------------------ */
+
+// The shape the client stores in localStorage after login
+const sessionUser = (account) => ({
+  id: account._id,
+  fullName: account.fullName,
+  email: account.email,
+  role: account.role,
+  profileImage: account.profileImage || '',
+});
+
+// GET my profile + the events I joined
+export const getProfile = async (req, res) => {
+  try {
+    const Model = getModel(req.role);
+    const account = await Model.findById(req.userId).select('-password');
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    let activities = [];
+    if (req.role !== 'admin') {
+      const registrations = await EventRegistration.find({ userId: req.userId })
+        .sort({ joinedAt: -1 })
+        .populate('eventId', 'title date category');
+
+      activities = registrations
+        .filter((r) => r.eventId) // skip events that were deleted
+        .map((r) => ({
+          _id: r._id,
+          eventId: r.eventId._id,
+          title: r.eventId.title,
+          date: r.eventId.date,
+          category: r.eventId.category,
+          joinedAt: r.joinedAt,
+        }));
+    }
+
+    res.status(200).json({ ...account.toObject(), activities });
+  } catch (error) {
+    console.error('Get Profile Error:', error);
+    res.status(500).json({ message: 'Server error fetching profile' });
+  }
+};
+
+// PUT update my name, email, phone and photo (multipart/form-data)
+export const updateProfile = async (req, res) => {
+  try {
+    const { firstName = '', lastName = '', email = '', phoneNumber = '', existingImage } = req.body;
+
+    const first = firstName.trim();
+    const last = lastName.trim();
+    if (!first || !last) {
+      return res.status(400).json({ message: 'First name and last name are required' });
+    }
+
+    const cleanEmail = email.trim();
+    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Enter a valid email address' });
+    }
+
+    const localPhone = toLocalPH(phoneNumber);
+    if (!localPhone) {
+      return res.status(400).json({ message: 'Enter a valid mobile number, e.g. 09123456789' });
+    }
+
+    const Model = getModel(req.role);
+    const account = await Model.findById(req.userId);
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    const emailTaken = await Model.findOne({ email: cleanEmail, _id: { $ne: req.userId } });
+    if (emailTaken) {
+      return res.status(400).json({ message: 'That email is already used by another account' });
+    }
+
+    const phoneTaken = await Model.findOne({
+      phoneNumber: phoneLookupRegex(localPhone),
+      _id: { $ne: req.userId },
+    });
+    if (phoneTaken) {
+      return res.status(400).json({ message: 'That phone number is already registered' });
+    }
+
+    account.fullName = `${first} ${last}`.replace(/\s+/g, ' ');
+    account.email = cleanEmail;
+    account.phoneNumber = localPhone;
+
+    if (req.file) {
+      account.profileImage = `/uploads/${req.file.filename}`;
+    } else if (existingImage !== undefined) {
+      // client always sends this; '' means the photo was removed
+      account.profileImage = existingImage;
+    }
+
+    await account.save();
+
+    res.status(200).json({ message: 'Profile updated', user: sessionUser(account) });
+  } catch (error) {
+    console.error('Update Profile Error:', error);
+    res.status(500).json({ message: 'Server error updating profile' });
+  }
+};
+
+// PUT change my password
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Please fill in all password fields' });
+    }
+
+    const passwordError = validateNewPassword(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
+
+    const Model = getModel(req.role);
+    const account = await Model.findById(req.userId);
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, account.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    if (await bcrypt.compare(newPassword, account.password)) {
+      return res.status(400).json({ message: 'New password must be different from your current one' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    account.password = await bcrypt.hash(newPassword, salt);
+    await account.save();
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change Password Error:', error);
+    res.status(500).json({ message: 'Server error changing password' });
   }
 };
