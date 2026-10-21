@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModal } from '../context/ModalContext';
+import ImagePicker from '../components/ImagePicker';
 
 const emptyForm = { title: '', description: '', tag: '', location: '', date: '', section: 'latest' };
 
@@ -67,7 +68,7 @@ export default function ManageNews() {
     const fd = new FormData();
     Object.entries(form).forEach(([key, val]) => fd.append(key, val));
     if (imageFile) fd.append('image', imageFile);
-    if (existingImage) fd.append('existingImage', existingImage);
+    fd.append('existingImage', existingImage); // empty string = photo was removed
 
     const url = editingId
       ? `${import.meta.env.VITE_API_URL}/api/news/${editingId}`
@@ -255,17 +256,15 @@ export default function ManageNews() {
                   className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"
                 />
               </div>
-              <div>
-                <label className="text-xs font-medium text-gray-600">Photo</label>
-                <input
-                  type="file" accept="image/*"
-                  onChange={(e) => setImageFile(e.target.files[0])}
-                  className="w-full text-xs mt-1"
-                />
-                {existingImage && !imageFile && (
-                  <img src={`${import.meta.env.VITE_API_URL}${existingImage}`} alt="current" className="w-20 h-20 rounded-xl object-cover mt-2" />
-                )}
-              </div>
+              <ImagePicker
+                label="Photo"
+                existing={existingImage ? [existingImage] : []}
+                onExistingChange={(arr) => setExistingImage(arr[0] || '')}
+                files={imageFile ? [imageFile] : []}
+                onFilesChange={(arr) => setImageFile(arr[0] || null)}
+                rounded="rounded-xl"
+                thumb="w-24 h-24"
+              />
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-xs font-bold text-gray-500">
                   Cancel

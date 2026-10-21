@@ -37,6 +37,18 @@ export default function AdminSidebar({ activeTab, setActiveTab, isOpen, onClose 
         </div>
 
         <nav className="space-y-2 flex-1">
+          {/* 🟢 ADDED DASHBOARD OVERVIEW TAB AT THE TOP */}
+          <button
+            onClick={() => selectTab('overview')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
+              activeTab === 'overview'
+                ? 'bg-[#005C38] text-white'
+                : 'text-emerald-100/70 hover:bg-[#004A2D] hover:text-white'
+            }`}
+          >
+            Dashboard Overview
+          </button>
+
           <button
             onClick={() => selectTab('manage')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
@@ -69,16 +81,17 @@ export default function AdminSidebar({ activeTab, setActiveTab, isOpen, onClose 
           >
             Admin Approvals
           </button>
+
           <button
-  onClick={() => selectTab('approved')}
-  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
-    activeTab === 'approved'
-      ? 'bg-[#005C38] text-white'
-      : 'text-emerald-100/70 hover:bg-[#004A2D] hover:text-white'
-  }`}
->
-  Approved Users
-</button>
+            onClick={() => selectTab('approved')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${
+              activeTab === 'approved'
+                ? 'bg-[#005C38] text-white'
+                : 'text-emerald-100/70 hover:bg-[#004A2D] hover:text-white'
+            }`}
+          >
+            Approved Users
+          </button>
 
           <button
             onClick={() => selectTab('officials')}

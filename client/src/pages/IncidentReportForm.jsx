@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ImagePicker from '../components/ImagePicker';
 
 export default function IncidentReportForm() {
   const [title, setTitle] = useState('');
@@ -140,15 +141,12 @@ export default function IncidentReportForm() {
           />
         </div>
 
-        <div>
-          <label className="text-xs font-semibold text-gray-700 block mb-1">Attach Photo (Optional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-900 hover:file:bg-emerald-100"
-          />
-        </div>
+        <ImagePicker
+          label="Attach Photo (Optional)"
+          files={image ? [image] : []}
+          onFilesChange={(arr) => setImage(arr[0] || null)}
+          thumb="w-24 h-24"
+        />
 
         <button
           type="submit"

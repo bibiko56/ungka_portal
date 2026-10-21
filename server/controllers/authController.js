@@ -477,3 +477,37 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+// GET dashboard overview stats (admin only)
+export const getDashboardStats = async (req, res) => {
+  try {
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+
+    const [totalUsers, registeredThisYear, pendingUsers, pendingAdmins, zoneAgg] = await Promise.all([
+      User.countDocuments({ isApproved: true }),
+      User.countDocuments({ isApproved: true, createdAt: { $gte: startOfYear } }),
+      User.countDocuments({ isApproved: false }),
+      Admin.countDocuments({ isApproved: false }),
+      User.aggregate([
+        { $match: { isApproved: true } },
+        { $group: { _id: '$zone', count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    // Always return Zone 1-6, even when a zone has 0 residents
+    const counts = Object.fromEntries(zoneAgg.map((z) => [z._id || 'unknown', z.count]));
+    const zones = ['zone-1', 'zone-2', 'zone-3', 'zone-4', 'zone-5', 'zone-6'].map((zone) => ({
+      zone,
+      count: counts[zone] || 0,
+    }));
+    if (counts.unknown) zones.push({ zone: 'unknown', count: counts.unknown });
+
+    res.status(200).json({
+      totalUsers,
+      registeredThisYear,
+      pendingApprovals: pendingUsers + pendingAdmins,
+      zones,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching dashboard stats' });
+  }
+};

@@ -8,7 +8,8 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname)),
 });
 const upload = multer({ storage });
 
@@ -52,9 +53,10 @@ router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) 
       order: order ? Number(order) : 0,
     };
 
-    if (req.file) {
+        if (req.file) {
       updateData.image = `/uploads/${req.file.filename}`;
-    } else if (existingImage) {
+    } else if (existingImage !== undefined) {
+      // client always sends this field; '' means the photo was removed
       updateData.image = existingImage;
     }
 

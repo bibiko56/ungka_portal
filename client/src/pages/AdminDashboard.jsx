@@ -6,6 +6,8 @@ import AdminApprovals from './AdminApprovals';
 import ApprovedAccounts from './ApprovedAccounts';
 import ManageOfficials from './ManageOfficials';
 import ManageNews from './ManageNews';
+import DashboardOverview from '../components/DashboardOverview';
+import ImagePicker from '../components/ImagePicker';
 import { useModal } from '../context/ModalContext';
 
 import { Menu } from 'lucide-react';
@@ -15,7 +17,7 @@ export default function AdminDashboard() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('manage'); // 'manage', 'incidents', or 'approvals'
+  const [activeTab, setActiveTab] = useState('overview');
   const { alert, confirm } = useModal();
 
   // Form State
@@ -26,7 +28,7 @@ export default function AdminDashboard() {
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
   const [category, setCategory] = useState('Barangay Programs');
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState([]); // newly chosen File objects
   const [existingImages, setExistingImages] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
@@ -297,6 +299,8 @@ export default function AdminDashboard() {
     </button>
     <span className="text-sm font-bold text-gray-800">Admin Dashboard</span>
   </div>
+        {activeTab === 'overview' && <DashboardOverview goToTab={setActiveTab} />}
+
         {activeTab === 'manage' && (
           <ManageEvents
             events={events}
@@ -450,43 +454,14 @@ export default function AdminDashboard() {
                 ></textarea>
               </div>
 
-              {existingImages.length > 0 && (
-                <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">Current Images</label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {existingImages.map((img, idx) => (
-                      <div key={idx} className="relative group w-16 h-16 border rounded-lg overflow-hidden bg-gray-50">
-                        <img
-                          src={`${import.meta.env.VITE_API_URL}${img}`}
-                          alt="Event preview"
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))}
-                          className="absolute top-0 right-0 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-bl font-bold"
-                          title="Remove image"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
-                  {existingImages.length > 0 ? 'Upload New/Additional Images' : 'Upload Images'}
-                </label>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => setImages(e.target.files)}
-                  className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-900 hover:file:bg-emerald-100"
-                />
-              </div>
+              <ImagePicker
+                label="Event Photos"
+                max={5}
+                existing={existingImages}
+                onExistingChange={setExistingImages}
+                files={images}
+                onFilesChange={setImages}
+              />
 
               <div className="flex justify-end gap-3 pt-3 border-t">
                 <button

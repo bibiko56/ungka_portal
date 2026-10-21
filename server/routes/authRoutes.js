@@ -2,7 +2,7 @@ import express from 'express';
 import {
   register, login, adminRegister, adminLogin,
   getPendingAccounts, approveAccount, declineAccount,forgotPassword, resetPassword,verifyResetCode,
-  getApprovedAccounts, revokeAccount,
+  getApprovedAccounts, revokeAccount, getDashboardStats,
 } from '../controllers/authController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
@@ -20,6 +20,7 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.post('/verify-reset-code', verifyResetCode);
 
+router.get('/stats', protect, adminOnly, getDashboardStats);
 router.get('/approved', protect, adminOnly, getApprovedAccounts);
 router.put('/revoke/:type/:id', protect, adminOnly, revokeAccount);
 

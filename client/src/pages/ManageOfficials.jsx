@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModal } from '../context/ModalContext';
+import ImagePicker from '../components/ImagePicker';
 
 const CATEGORIES = [
   { key: 'barangay', label: 'Barangay Officials' },
@@ -66,7 +67,7 @@ export default function ManageOfficials() {
     const fd = new FormData();
     Object.entries(form).forEach(([key, val]) => fd.append(key, val));
     if (imageFile) fd.append('image', imageFile);
-    if (existingImage) fd.append('existingImage', existingImage);
+    fd.append('existingImage', existingImage); // empty string = photo was removed
 
     const url = editingId
       ? `${import.meta.env.VITE_API_URL}/api/officials/${editingId}`
@@ -225,17 +226,15 @@ export default function ManageOfficials() {
                 />
                 Display as the head of this category (e.g. Captain, SK Chairman)
               </label>
-              <div>
-                <label className="text-xs font-medium text-gray-600">Photo</label>
-                <input
-                  type="file" accept="image/*"
-                  onChange={(e) => setImageFile(e.target.files[0])}
-                  className="w-full text-xs mt-1"
-                />
-                {existingImage && !imageFile && (
-                  <img src={`${import.meta.env.VITE_API_URL}${existingImage}`} alt="current" className="w-16 h-16 rounded-full object-cover mt-2" />
-                )}
-              </div>
+              <ImagePicker
+                label="Photo"
+                existing={existingImage ? [existingImage] : []}
+                onExistingChange={(arr) => setExistingImage(arr[0] || '')}
+                files={imageFile ? [imageFile] : []}
+                onFilesChange={(arr) => setImageFile(arr[0] || null)}
+                rounded="rounded-full"
+                thumb="w-20 h-20"
+              />
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-xs font-bold text-gray-500">
                   Cancel

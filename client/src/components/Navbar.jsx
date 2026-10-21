@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import ProfileMenu from './ProfileMenu';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -85,7 +87,7 @@ export default function Navbar() {
           <Link to="/report-issue" className={navLinkClass('/report-issue')}>Report Issue</Link>
           <Link to="/contact" className={navLinkClass('/contact')}>Contact</Link>
 
-          {/* 🟢 EXCLUSIVE ADMIN DASHBOARD LINK — kept as a button style, no underline */}
+          {/* 🟢 EXCLUSIVE ADMIN DASHBOARD LINK */}
           {isAdmin && (
             <Link
               to="/admin/dashboard"
@@ -102,18 +104,12 @@ export default function Navbar() {
 
         {/* User Auth Section — desktop only */}
         <div className="hidden md:flex items-center gap-4">
+
+          <NotificationBell />
+
           {user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500 font-medium hidden sm:inline">
-                Hi, <strong className="text-gray-800">{user.fullName || 'there'}</strong>
-              </span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-              >
-                Logout
-              </button>
-            </div>
+            /* 🟢 REPLACED: ProfileMenu dropdown instead of raw text & button */
+            <ProfileMenu user={user} onLogout={handleLogout} />
           ) : (
             <div className="flex items-center gap-2">
               <Link
@@ -165,21 +161,14 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div className="pt-3 mt-2 border-t border-gray-100">
+          <div className="pt-3 mt-2 border-t border-gray-100 px-4">
             {user ? (
-              <div className="flex items-center justify-between px-4">
-                <span className="text-xs text-gray-500 font-medium">
-                  Hi, <strong className="text-gray-800">{user.fullName || 'there'}</strong>
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-                >
-                  Logout
-                </button>
+              /* 🟢 ProfileMenu rendered cleanly in mobile drawer */
+              <div className="flex items-center justify-between py-1">
+                <ProfileMenu user={user} onLogout={handleLogout} />
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-4">
+              <div className="flex items-center gap-2">
                 <Link
                   to="/register/user"
                   className="flex-1 text-center border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50 text-xs font-bold px-4 py-2.5 rounded-lg transition-colors"
