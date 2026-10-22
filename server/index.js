@@ -7,6 +7,7 @@ import eventRoutes from './routes/eventRoutes.js';
 import incidentRoutes from './routes/incidentRoutes.js';
 import officialRoutes from './routes/officialRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
+import { serveImage } from './middleware/dbStorage.js';
 import dns from 'node:dns';
 
 const app = express();
@@ -16,7 +17,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.use('/uploads', express.static('uploads'));
+app.get('/uploads/:id', serveImage);              // photos stored in MongoDB
+app.use('/uploads', express.static('uploads'));    // legacy files on disk
 
 dns.setDefaultResultOrder('ipv4first');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
