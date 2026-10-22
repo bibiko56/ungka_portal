@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Calendar, MapPin, Tag, ArrowLeft, Share2 } from 'lucide-react';
+import ExpandableImage from '../components/ExpandableImage';
 
 const formatDate = (d) =>
   new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -80,7 +81,7 @@ export default function NewsArticle() {
 
         <div className="relative w-full h-[260px] sm:h-[420px] rounded-3xl overflow-hidden bg-emerald-950 shadow-inner flex items-center justify-center">
           {article.image ? (
-            <img src={imgSrc(article.image)} alt={article.title} className="w-full h-full object-cover" />
+            <ExpandableImage src={imgSrc(article.image)} alt={article.title} className="w-full h-full object-cover" />
           ) : (
             <span className="text-xs text-emerald-300 font-bold">No image</span>
           )}

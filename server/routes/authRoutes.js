@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
+import dbStorage from '../middleware/dbStorage.js';
 import {
   register, login, adminRegister, adminLogin,
   getPendingAccounts, approveAccount, declineAccount,forgotPassword, resetPassword,verifyResetCode,
@@ -13,11 +13,7 @@ const router = express.Router();
 
 // Profile photo uploads
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) =>
-      cb(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname)),
-  }),
+  storage: dbStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) =>
     file.mimetype.startsWith('image/') ? cb(null, true) : cb(new Error('Only image files are allowed')),

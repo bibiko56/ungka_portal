@@ -1,20 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
 import Event from '../models/Event.js';
 import EventRegistration from '../models/EventRegistration.js';
+import dbStorage from '../middleware/dbStorage.js';
 
 const router = express.Router();
 
-// 1. Set up storage engine for uploaded files
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname));
-  }
-});
+const storage = dbStorage;
 
 const upload = multer({ storage: storage });
 

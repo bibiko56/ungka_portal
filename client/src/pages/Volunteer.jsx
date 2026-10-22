@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
 import JoinAuthModal from '../components/JoinAuthModal';
+import ExpandableImage from '../components/ExpandableImage';
 
 export default function Volunteer() {
   const [events, setEvents] = useState([]);
@@ -238,12 +239,12 @@ const handleJoinEvent = async (eventId) => {
                   {/* Render images for each event */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {evt.images && evt.images.map((img, idx) => (
-                      <img 
-                        key={idx} 
-                        src={`${import.meta.env.VITE_API_URL}${img}`} 
-                        alt={evt.title} 
-                        className="w-full h-40 object-cover rounded-2xl"
-                      />
+                      <ExpandableImage
+  key={idx}
+  src={`${import.meta.env.VITE_API_URL}${img}`}
+  alt={evt.title}
+  className="w-full h-40 object-cover rounded-2xl"
+/>
                     ))}
                   </div>
 
@@ -313,12 +314,12 @@ const handleJoinEvent = async (eventId) => {
               {/* Modal Images Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {selectedModalEvent.images && selectedModalEvent.images.map((img, idx) => (
-                  <img 
-                    key={idx} 
-                    src={`${import.meta.env.VITE_API_URL}${img}`} 
-                    alt={selectedModalEvent.title} 
-                    className="w-full h-36 object-cover rounded-2xl border"
-                  />
+                  <ExpandableImage
+  key={idx}
+  src={`${import.meta.env.VITE_API_URL}${img}`}
+  alt={selectedModalEvent.title}
+  className="w-full h-36 object-cover rounded-2xl border"
+/>
                 ))}
               </div>
 

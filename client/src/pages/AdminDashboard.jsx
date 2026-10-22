@@ -9,6 +9,7 @@ import ManageNews from './ManageNews';
 import DashboardOverview from '../components/DashboardOverview';
 import ImagePicker from '../components/ImagePicker';
 import { useModal } from '../context/ModalContext';
+import ExpandableImage from '../components/ExpandableImage';
 
 import { Menu } from 'lucide-react';
 
@@ -593,11 +594,11 @@ export default function AdminDashboard() {
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Attached Photo Evidence</label>
                 <div className="rounded-2xl overflow-hidden border border-gray-200 bg-black/5 flex justify-center max-h-72">
-                  <img
-                    src={`${import.meta.env.VITE_API_URL}${selectedIncidentReport.image}`}
-                    alt="Incident Evidence"
-                    className="object-contain max-h-72 w-full"
-                  />
+                  <ExpandableImage
+  src={`${import.meta.env.VITE_API_URL}${selectedIncidentReport.image}`}
+  alt="Incident Evidence"
+  className="object-contain max-h-72 w-full"
+/>
                 </div>
               </div>
             )}
