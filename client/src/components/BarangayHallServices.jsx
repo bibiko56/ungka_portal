@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import {
   MessageSquareWarning, Gavel, HelpCircle, Award, FileCheck, IdCard, Receipt,
 } from 'lucide-react';
@@ -150,9 +151,14 @@ export default function BarangayHallServices() {
 
         {/* Bottom Actions Row */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-          <button className="bg-[#1e3e2b] hover:bg-[#152e20] text-white font-extrabold px-6 py-2.5 rounded-full transition shadow-sm text-xs sm:text-sm">
+          
+          {/* View More Button linked to Services page */}
+          <Link
+            to="/services"
+            className="bg-[#1e3e2b] hover:bg-[#152e20] active:scale-95 text-white font-extrabold px-6 py-2.5 rounded-full transition shadow-sm text-xs sm:text-sm inline-flex items-center justify-center"
+          >
             View More
-          </button>
+          </Link>
 
           {/* Navigation Controls */}
           <div className="flex items-center gap-2">

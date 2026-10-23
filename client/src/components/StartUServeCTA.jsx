@@ -1,11 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 export default function StartUServeCTA() {
-  const handleContactClick = () => {
-    // Add your navigation or contact modal trigger here
-    console.log('Navigate to Contact Us');
-  };
-
   return (
     <section className="bg-white py-16 px-4 sm:px-8">
       <div className="max-w-4xl mx-auto text-center space-y-6">
@@ -25,12 +21,12 @@ export default function StartUServeCTA() {
 
         {/* CTA BUTTON */}
         <div className="pt-2">
-          <button
-            onClick={handleContactClick}
-            className="bg-[#1e3e2b] hover:bg-[#152e20] text-white font-extrabold px-10 py-3.5 rounded-full transition duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base uppercase tracking-wider border border-emerald-700/30"
+          <Link
+            to="/contact"
+            className="inline-flex items-center justify-center bg-[#1e3e2b] hover:bg-[#152e20] active:scale-95 text-white font-extrabold px-10 py-3.5 rounded-full transition duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base uppercase tracking-wider border border-emerald-700/30"
           >
             CONTACT US
-          </button>
+          </Link>
         </div>
 
       </div>

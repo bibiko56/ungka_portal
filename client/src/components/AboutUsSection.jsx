@@ -1,10 +1,10 @@
 import React from 'react';
-import { ShieldCheck, HeartHandshake, Users } from 'lucide-react';
+import { ShieldCheck, HeartHandshake, Users, BarChart3 } from 'lucide-react';
 
 export default function AboutUsSection() {
   return (
     <section className="w-full bg-white text-gray-900 py-16 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-4xl mx-auto space-y-12 border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-sm">
+      <div className="max-w-5xl mx-auto space-y-12 border border-gray-200 rounded-3xl p-8 sm:p-12 shadow-sm">
         
         {/* Simple Heading */}
         <div className="text-center space-y-2">
@@ -19,8 +19,8 @@ export default function AboutUsSection() {
           Barangay Ungka II is a growing and vibrant community committed to providing accessible, responsive, and reliable services to its residents through dedicated local governance.
         </p>
 
-        {/* Clean 3-Column Feature List with borders */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+        {/* Clean 4-Column Feature List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
           <div className="space-y-2 flex flex-col items-center text-center p-6 bg-gray-50/50 border border-gray-100 rounded-2xl">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-1">
               <ShieldCheck className="w-6 h-6" />
@@ -49,6 +49,25 @@ export default function AboutUsSection() {
             <p className="text-xs text-gray-600 leading-relaxed">
               Bridging residents directly with local officials for faster assistance.
             </p>
+          </div>
+
+          {/* New Population Card */}
+          <div className="space-y-2 flex flex-col items-center text-center p-6 bg-gray-50/50 border border-gray-100 rounded-2xl">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-1">
+              <BarChart3 className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-gray-900">Estimated Population</h3>
+            <div className="w-full pt-1 text-xs text-gray-600 space-y-1">
+              <p className="font-semibold text-emerald-900">
+                <span className="font-bold text-sm">7,316</span> Residents
+              </p>
+              <p className="text-gray-500">
+                <span className="font-semibold text-gray-800">2,047</span> Families
+              </p>
+              <p className="text-gray-500">
+                <span className="font-semibold text-gray-800">1,931</span> Households
+              </p>
+            </div>
           </div>
         </div>
 
