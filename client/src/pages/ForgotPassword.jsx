@@ -271,11 +271,6 @@ export default function ForgotPassword() {
         {/* STEP 2: enter the 6-digit code */}
         {step === 2 && (
           <form onSubmit={handleVerify} className="space-y-4">
-            {devCode && (
-              <div className="bg-amber-50 text-amber-800 text-xs font-semibold p-3 rounded-xl border border-amber-200">
-                Testing mode: your code is <span className="font-black tracking-widest">{devCode}</span>
-              </div>
-            )}
             <CodeInput
               value={code}
               onChange={(v) => {
