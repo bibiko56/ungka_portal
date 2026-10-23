@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ServicesBanner from '../components/ServicesBanner';
 import ServiceModal from '../components/ServiceModal';
 import {
@@ -59,6 +59,11 @@ function ServiceCard({ icon: Icon, title, description, onSelect }) {
 export default function Services() {
   const [selectedService, setSelectedService] = useState(null);
 
+  // Scroll to top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-white">
       {/* Page Header */}
@@ -75,7 +80,7 @@ export default function Services() {
           <h3 className="text-lg sm:text-xl font-black text-[#1e3e2b]">
             Barangay Hall Services
           </h3>
-          <div className="grid grid-cols-2  gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {barangayHallServices.map((service) => (
               <ServiceCard key={service.title} {...service} onSelect={setSelectedService} />
             ))}
@@ -87,7 +92,7 @@ export default function Services() {
           <h3 className="text-lg sm:text-xl font-black text-[#1e3e2b]">
             Health Center Services
           </h3>
-          <div className="grid grid-cols-2  gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {healthCenterServices.map((service) => (
               <ServiceCard key={service.title} {...service} onSelect={setSelectedService} />
             ))}

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
-export default function Population({ showBanner = true }) { // <-- Added prop with default true
+export default function Population({ showBanner = true }) {
   return (
     <div className="bg-white text-gray-800 py-16 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto space-y-16">
@@ -9,8 +10,8 @@ export default function Population({ showBanner = true }) { // <-- Added prop wi
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Text Content */}
-          <div className="space-y-6">
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-[#2d523e] leading-tight decoration-[#2d523e] decoration-4 underline-offset-8">
+          <div className="space-y-6 text-center sm:text-left flex flex-col items-center sm:items-start">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-[#2d523e] leading-tight decoration-[#2d523e] underline sm:no-underline decoration-4 underline-offset-8">
               Barangay Ungka II<br />
               Population
             </h2>
@@ -23,9 +24,13 @@ export default function Population({ showBanner = true }) { // <-- Added prop wi
               Barangay Ungka II is an urban and growing community in Pavia, Iloilo, known as the "Commercial Center of Pavia." It is home to major shopping centers and businesses, making it an active area for residents, visitors, and commercial activities. Its growing population highlights the need for fast, accessible, and organized community information and services.
             </p>
 
-            <button className="bg-[#2d523e] hover:bg-[#234232] text-white font-semibold py-3 px-8 rounded-xl transition duration-200 shadow-md">
+            {/* Responsive "Learn More" Button wrapped with Link */}
+            <Link
+              to="/about"
+              className="w-full sm:w-auto inline-flex items-center justify-center bg-[#2d523e] hover:bg-[#234232] active:scale-95 text-white text-sm sm:text-base font-semibold py-3 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2d523e] focus:ring-offset-2"
+            >
               Learn more
-            </button>
+            </Link>
           </div>
 
           {/* Right Map Image */}
