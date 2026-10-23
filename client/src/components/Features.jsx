@@ -59,16 +59,27 @@ export default function Features() {
   const [isDragging, setIsDragging] = useState(false);
   const cardRefs = useRef([]);
   const trackRef = useRef(null);
+  const scrollerRef = useRef(null);
 
-  // Auto-center active card
+  // Center the active card inside the scroller.
+  // Only the scroller moves (not the whole page), so it stays centered at any zoom level.
+  const centerActiveCard = (behavior = 'smooth') => {
+    const scroller = scrollerRef.current;
+    const card = cardRefs.current[activeIndex];
+    if (!scroller || !card) return;
+    const left = card.offsetLeft - (scroller.clientWidth - card.offsetWidth) / 2;
+    scroller.scrollTo({ left, behavior });
+  };
+
   useEffect(() => {
-    if (cardRefs.current[activeIndex]) {
-      cardRefs.current[activeIndex].scrollIntoView({
-        behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest',
-      });
-    }
+    centerActiveCard();
+  }, [activeIndex]);
+
+  // Re-center when the window size or browser zoom changes
+  useEffect(() => {
+    const onResize = () => centerActiveCard('instant');
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, [activeIndex]);
 
   const handleScroll = (direction) => {
@@ -122,7 +133,7 @@ export default function Features() {
 
       {/* Main Carousel Wrapper */}
       <div className="relative max-w-7xl mx-auto flex items-center justify-between">
-        
+
         {/* Left Arrow Button */}
         <button
           onClick={() => handleScroll('left')}
@@ -136,7 +147,13 @@ export default function Features() {
         </button>
 
         {/* Scrollable Cards Container */}
-        <div className="flex gap-4 sm:gap-6 overflow-x-auto py-8 px-[35vw] scrollbar-none scroll-smooth items-center w-full">
+        <div
+          ref={scrollerRef}
+          className="relative flex gap-4 sm:gap-6 overflow-x-auto py-8 scrollbar-none scroll-smooth items-center flex-1 min-w-0"
+        >
+          {/* Spacer: lets the first card sit in the middle */}
+          <div aria-hidden="true" className="flex-shrink-0 w-[calc(50%_-_9rem)] sm:w-[calc(50%_-_10.5rem)]" />
+
           {featuresData.map((item, index) => {
             const isActive = index === activeIndex;
             return (
@@ -163,6 +180,9 @@ export default function Features() {
               </div>
             );
           })}
+
+          {/* Spacer: lets the last card sit in the middle */}
+          <div aria-hidden="true" className="flex-shrink-0 w-[calc(50%_-_9rem)] sm:w-[calc(50%_-_10.5rem)]" />
         </div>
 
         {/* Right Arrow Button */}

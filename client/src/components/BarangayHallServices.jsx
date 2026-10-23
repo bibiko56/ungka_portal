@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   MessageSquareWarning, Gavel, HelpCircle, Award, FileCheck, IdCard, Receipt,
 } from 'lucide-react';
+import ServiceModal from './ServiceModal';
 
 const barangayServicesData = [
   {
@@ -50,6 +51,7 @@ const barangayServicesData = [
 
 export default function BarangayHallServices() {
   const scrollContainerRef = useRef(null);
+  const [selectedService, setSelectedService] = useState(null);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -114,7 +116,16 @@ export default function BarangayHallServices() {
             return (
               <div
                 key={service.id}
-                className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedService(service.title)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedService(service.title);
+                  }
+                }}
+                className="min-w-[260px] sm:min-w-[280px] max-w-[280px] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between snap-start flex-shrink-0 group hover:shadow-md transition duration-300 cursor-pointer"
               >
                 {/* Card Icon */}
                 <div className="h-44 w-full bg-white-50 border border-emerald-200 flex items-center justify-center">
@@ -169,6 +180,7 @@ export default function BarangayHallServices() {
 
       </div>
 
+      <ServiceModal title={selectedService} onClose={() => setSelectedService(null)} />
     </section>
   );
 }

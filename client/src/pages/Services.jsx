@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ServicesBanner from '../components/ServicesBanner';
+import ServiceModal from '../components/ServiceModal';
 import {
   MessageSquareWarning, Gavel, HelpCircle, Award, FileCheck, IdCard, Receipt,
   Stethoscope, Bug, Baby, Syringe, Pill, HeartHandshake, ClipboardCheck,
@@ -30,9 +31,20 @@ const healthCenterServices = [
   { icon: BookOpen, title: 'Health Education', description: 'Information campaigns about sanitation, hygiene, disease prevention, and healthy living.' },
 ];
 
-function ServiceCard({ icon: Icon, title, description }) {
+function ServiceCard({ icon: Icon, title, description, onSelect }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md hover:border-emerald-700/40 transition-all">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(title)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(title);
+        }
+      }}
+      className="bg-white border border-gray-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm hover:shadow-md hover:border-emerald-700/40 transition-all cursor-pointer"
+    >
       <div className="w-11 h-11 rounded-xl border-2 border-[#1e3e2b] flex items-center justify-center flex-shrink-0 text-[#1e3e2b]">
         <Icon className="w-5 h-5" strokeWidth={2} />
       </div>
@@ -45,6 +57,8 @@ function ServiceCard({ icon: Icon, title, description }) {
 }
 
 export default function Services() {
+  const [selectedService, setSelectedService] = useState(null);
+
   return (
     <div className="bg-white">
       {/* Page Header */}
@@ -63,7 +77,7 @@ export default function Services() {
           </h3>
           <div className="grid grid-cols-2  gap-4">
             {barangayHallServices.map((service) => (
-              <ServiceCard key={service.title} {...service} />
+              <ServiceCard key={service.title} {...service} onSelect={setSelectedService} />
             ))}
           </div>
         </div>
@@ -75,12 +89,14 @@ export default function Services() {
           </h3>
           <div className="grid grid-cols-2  gap-4">
             {healthCenterServices.map((service) => (
-              <ServiceCard key={service.title} {...service} />
+              <ServiceCard key={service.title} {...service} onSelect={setSelectedService} />
             ))}
           </div>
         </div>
 
       </div>
+
+      <ServiceModal title={selectedService} onClose={() => setSelectedService(null)} />
     </div>
   );
 }
